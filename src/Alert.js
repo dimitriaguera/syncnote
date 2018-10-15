@@ -6,7 +6,7 @@ class AlertNoConnect extends Component {
     const { type, message } = this.props.alert;
     return (
       <div className={`alert-${type}`}>
-        <p>{message}</p>
+        <p>{JSON.stringify(message)}</p>
       </div>
     );
   }

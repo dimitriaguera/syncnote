@@ -11,6 +11,6 @@ export const loginFetch = async (username, password) => {
       user: response.data.data.user
     };
   } catch (err) {
-    throw err.response.data.error;
+    throw err;
   }
 };

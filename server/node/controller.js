@@ -2,34 +2,34 @@ const mongodb = require("../db/mongodb");
 const { nodeFactory, nodeMerge } = require("./model");
 
 module.exports = {
-  getAllUserNode,
-  post,
-  put,
-  deleteNode,
-  getNodeById
+  routerGetAllUserNode,
+  routerPost,
+  routerPut,
+  routerDeleteNode,
+  getNodeById,
+  addNode,
+  updateNodeById,
+  deleteNodeById
 };
 
-async function post(req, res) {
+async function routerPost(req, res) {
   const _node = nodeFactory(req.body, req.user);
-  const data = await mongodb
-    .getDb()
-    .collection("node")
-    .insertOne(_node);
+  const data = await addNode(_node);
   res.json({ success: true, data: data });
 }
 
-async function put(req, res) {
+async function routerPut(req, res) {
   const node = nodeMerge(req._currentNode, req.body);
   const data = await updateNodeById(req._currentNode._id, node);
   res.json({ success: true, data: data });
 }
 
-async function deleteNode(req, res) {
+async function routerDeleteNode(req, res) {
   const data = await deleteNodeById(req._nodeId);
   res.json({ success: true, data: data });
 }
 
-async function getAllUserNode(req, res) {
+async function routerGetAllUserNode(req, res) {
   const data = await getNodeByUserId(req._userId);
   res.json(data);
 }
@@ -47,6 +47,13 @@ async function getNodeById(id) {
     .getDb()
     .collection("node")
     .findOne({ _id: id });
+}
+
+async function addNode(node) {
+  return await mongodb
+    .getDb()
+    .collection("node")
+    .insertOne(node);
 }
 
 async function updateNodeById(id, update) {

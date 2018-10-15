@@ -1,42 +1,54 @@
 import { store } from "./reduxServ";
-import { create_node, update_node, delete_node } from "../redux/actions";
+import {
+  create_node,
+  bulk_node,
+  update_node,
+  delete_node
+} from "../redux/actions";
 
 export const changeInStore = changes => {
+  const data = buildBulkRequest(changes);
+  onBulk(data);
+};
+
+function onCreate(change, partial) {
+  store.dispatch(create_node(change.obj));
+}
+
+function onUpdate(change, partial) {
+  store.dispatch(update_node(change.obj));
+}
+
+function onDelete(change, partial) {
+  store.dispatch(delete_node(change.key));
+}
+
+function onBulk(data) {
+  store.dispatch(bulk_node(data));
+}
+
+function buildBulkRequest(changes) {
+  const bulk = {
+    create: [],
+    update: [],
+    delete: []
+  };
   changes.forEach(function(change, partial) {
     switch (change.type) {
       case 1:
-        onCreate(change, partial);
+        bulk.create.push(change.obj);
         break;
       case 2:
-        onUpdate(change, partial);
+        bulk.update.push(change.obj);
         break;
       case 3:
-        onDelete(change, partial);
+        bulk.delete.push(change.key);
         break;
 
       default:
         console.log(`Change type ${change.type} no handled.`);
     }
   });
-};
 
-function onCreate(change, partial) {
-  console.log("An object was created: " + JSON.stringify(change.obj));
-  store.dispatch(create_node(change.obj));
-}
-
-function onUpdate(change, partial) {
-  console.log(
-    "An object with key " +
-      change.key +
-      " was updated with modifications: " +
-      JSON.stringify(change.mods)
-  );
-  store.dispatch(update_node(change.obj));
-}
-
-function onDelete(change, partial) {
-  console.log(change);
-  console.log("An object was deleted: " + JSON.stringify(change.oldObj));
-  store.dispatch(delete_node(change.key));
+  return bulk;
 }

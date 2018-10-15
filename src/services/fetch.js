@@ -19,7 +19,7 @@ export const post = (url, data) => {
   return axios(opt).catch(error => {
     // Error
     if (error.response) {
-      throw error;
+      throw error.response.data.error;
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
       // console.log(error.response.data);
@@ -29,12 +29,10 @@ export const post = (url, data) => {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      console.log(error.request);
-      throw error;
+      throw error.request.statusText;
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.log(error.message);
-      throw error;
+      throw error.message;
     }
   });
 };

@@ -1,4 +1,11 @@
-import { CREATE_NODE, UPDATE_NODE, DELETE_NODE, CLEAR_NODE } from "../actions";
+import {
+  CREATE_NODE,
+  BULK_CREATE_NODE,
+  BULK_NODE,
+  UPDATE_NODE,
+  DELETE_NODE,
+  CLEAR_NODE
+} from "../actions";
 
 const initialState = {};
 
@@ -8,6 +15,24 @@ export function nodes(state = initialState, action) {
     case CREATE_NODE:
       nState = Object.assign({}, state);
       nState[action.node._id] = action.node;
+      return nState;
+    case BULK_CREATE_NODE:
+      nState = Object.assign({}, state);
+      action.nodes.forEach(node => {
+        nState[node._id] = node;
+      });
+      return nState;
+    case BULK_NODE:
+      nState = Object.assign({}, state);
+      action.data.delete.forEach(id => {
+        delete nState[id];
+      });
+      action.data.create.forEach(node => {
+        nState[node._id] = node;
+      });
+      action.data.update.forEach(node => {
+        nState[node._id] = Object.assign({}, state[node._id], node);
+      });
       return nState;
     case UPDATE_NODE:
       return {

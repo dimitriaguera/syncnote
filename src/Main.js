@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import FormNode from "./FormNode";
-import ListNode from "./ListNode";
+import NodeList from "./NodeList";
 
 class List extends Component {
   render() {
     return (
       <div className="main">
         <FormNode />
-        <ListNode />
+        <NodeList />
       </div>
     );
   }

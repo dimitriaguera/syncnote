@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import NodeItem from "./NodeItem";
 
-class ListNodeNoConnect extends Component {
+class NodeListNoConnect extends Component {
   render() {
     console.log("RENDER");
     const { nodes } = this.props;
@@ -11,7 +12,9 @@ class ListNodeNoConnect extends Component {
         <h1>List</h1>
         <ul>
           {Object.keys(nodes).map(key => (
-            <option value={key}>{nodes[key].name}</option>
+            <li key={key} value={key}>
+              <NodeItem node={nodes[key]} />
+            </li>
           ))}
         </ul>
       </div>
@@ -29,9 +32,9 @@ const mapDispatchToProps = dispatch => {
   return {};
 };
 
-const ListNode = connect(
+const NodeList = connect(
   mapStateToProps,
   mapDispatchToProps
-)(ListNodeNoConnect);
+)(NodeListNoConnect);
 
-export default ListNode;
+export default NodeList;

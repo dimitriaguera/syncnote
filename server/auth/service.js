@@ -62,6 +62,11 @@ module.exports = {
     return null;
   },
 
+  extractToken: function(token) {
+    let extractedToken = token.substr(7);
+    return extractedToken;
+  },
+
   getUserFromToken: function(req, done) {
     let token = this.getToken(req.headers);
 

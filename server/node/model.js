@@ -5,7 +5,8 @@ const _ = require("lodash");
 module.exports = {
   init,
   nodeMerge,
-  nodeFactory
+  nodeFactory,
+  preparNodeToUpdate
 };
 
 function init() {
@@ -38,6 +39,7 @@ function nodeFactory(data, user) {
   }
 
   return {
+    _id: uuidv1(),
     name: name,
     owner: user._id,
     parent: parent || null,
@@ -67,4 +69,17 @@ function nodeMerge(old, update) {
   }
 
   return _.merge(old, update);
+}
+
+function preparNodeToUpdate(update) {
+  if (!update._id || _.isEmpty(update)) {
+    const err = new Error("Nothing to update or no node Id.");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const _node = Object.assign({}, update);
+  _node._rev = uuidv1();
+
+  return _node;
 }

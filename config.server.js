@@ -1,4 +1,8 @@
 module.exports = {
+  whitelist: ["http://localhost:3000", "http://localhost:5000"], // Allowed by CORS
+
+  port: 5000,
+
   db: {
     database: "syncnote",
     host: "localhost",
