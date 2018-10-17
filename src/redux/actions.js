@@ -1,6 +1,6 @@
-import { loginFetch } from "../services/authentication";
+import { loginFetch } from "../services/auth-api";
 import { createDbFromRemote } from "../services/sync";
-import { initDb, clearDb, getAllTables } from "../services/db";
+import { initLocalDb, clearLocalDb, getAllTables } from "../services/local-db";
 import socket from "../services/socket";
 import {
   setLocalToken,
@@ -8,8 +8,26 @@ import {
   getLocalUser,
   clearLocalStorage
 } from "../services/session";
-
-import { BOOT_START, BOOT_SUCCESS, BOOT_FAILURE } from "./_constants";
+import {
+  BOOT_START,
+  BOOT_SUCCESS,
+  BOOT_FAILURE,
+  CREATE_NODE,
+  BULK_CREATE_NODE,
+  BULK_NODE,
+  UPDATE_NODE,
+  DELETE_NODE,
+  CLEAR_NODE,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+  LOGOUT,
+  ALERT_SUCCESS,
+  ALERT_WARNING,
+  ALERT_INFO,
+  ALERT_CLEAR,
+  ALERT_ERROR
+} from "./_constants";
 
 export const boot_start = () => {
   return { type: BOOT_START };
@@ -30,7 +48,7 @@ export const startBootLocalProcess = async dispatch => {
       // Login user.
       await dispatch(login_success(user));
       // Create local user db.
-      initDb(user);
+      initLocalDb(user);
       // Get IndexDb datas.
       const data = await getAllTables();
       // Set app state from datas.
@@ -43,17 +61,11 @@ export const startBootLocalProcess = async dispatch => {
       dispatch(boot_success());
     }
   } catch (err) {
-    clearDb();
+    clearLocalDb();
     clearLocalStorage();
     dispatch(boot_failure(err));
   }
 };
-
-export const ALERT_SUCCESS = "app/alert/ALERT_SUCCESS";
-export const ALERT_ERROR = "app/alert/ALERT_ERROR";
-export const ALERT_WARNING = "app/alert/ALERT_WARNING";
-export const ALERT_INFO = "app/alert/ALERT_INFO";
-export const ALERT_CLEAR = "app/alert/ALERT_CLEAR";
 
 export const msg_success = message => {
   return { type: ALERT_SUCCESS, message };
@@ -76,28 +88,42 @@ export const msg_clear = () => {
   return { type: ALERT_CLEAR };
 };
 
-export const LOGIN_REQUEST = "app/auth/LOGIN_REQUEST";
-export const LOGIN_SUCCESS = "app/auth/LOGIN_SUCCESS";
-export const LOGIN_FAILURE = "app/auth/LOGIN_FAILURE";
-export const LOGOUT = "app/auth/LOGOUT";
-
 export const login = (username, password) => {
   return async dispatch => {
     dispatch(login_request());
     try {
-      const data = await loginFetch(username, password);
+      const { user, token } = await loginFetch(username, password);
       socket.close();
-      setLocalToken(data.token);
-      setLocalUser(data.user);
-      dispatch(login_success(data.user));
-      initDb(data.user);
-      createDbFromRemote(data.user);
+      setLocalToken(token);
+      setLocalUser(user);
+      dispatch(login_success(user));
+      initLocalDb(user);
+      createDbFromRemote(user);
       socket.open();
-      dispatch(msg_success(`Successful logged as ${data.user.username}`));
+      dispatch(msg_success(`Successful logged as ${user.username}`));
     } catch (err) {
       socket.close();
-      clearDb();
+      clearLocalDb();
       clearLocalStorage();
+      dispatch(login_failure());
+      dispatch(msg_error(err));
+    }
+  };
+};
+
+export const switchLogin = user => {
+  return async dispatch => {
+    dispatch(login_request());
+    try {
+      socket.close();
+      dispatch(login_success(user));
+      initLocalDb(user);
+      createDbFromRemote(user);
+      socket.open();
+      dispatch(msg_success(`Successful logged as ${user.username}`));
+    } catch (err) {
+      socket.close();
+      clearLocalDb();
       dispatch(login_failure());
       dispatch(msg_error(err));
     }
@@ -106,9 +132,10 @@ export const login = (username, password) => {
 
 export const logout = dispatch => {
   clearLocalStorage();
-  clearDb();
+  clearLocalDb();
   socket.close();
   dispatch(logout_request());
+  dispatch(msg_success("Logged out."));
 };
 
 export const login_request = () => {
@@ -135,13 +162,6 @@ export const logout_request = () => {
     type: LOGOUT
   };
 };
-
-export const CREATE_NODE = "app/alert/CREATE_NODE";
-export const BULK_CREATE_NODE = "app/alert/BULK_CREATE_NODE";
-export const BULK_NODE = "app/alert/BULK_NODE";
-export const UPDATE_NODE = "app/alert/UPDATE_NODE";
-export const DELETE_NODE = "app/alert/DELETE_NODE";
-export const CLEAR_NODE = "app/alert/CLEAR_NODE";
 
 export const bulk_node = data => {
   return { type: BULK_NODE, data };

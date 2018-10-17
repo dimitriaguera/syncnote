@@ -1,54 +1,15 @@
-import { store } from "./reduxServ";
-import {
-  create_node,
-  bulk_node,
-  update_node,
-  delete_node
-} from "../redux/actions";
+import { createStore, applyMiddleware, compose } from "redux";
+import thunk from "redux-thunk";
+import rootReducer from "../redux/reducers";
 
-export const changeInStore = changes => {
-  const data = buildBulkRequest(changes);
-  onBulk(data);
-};
+const composeEnhancers =
+  process.env.NODE_ENV !== "production" &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : compose;
 
-function onCreate(change, partial) {
-  store.dispatch(create_node(change.obj));
-}
-
-function onUpdate(change, partial) {
-  store.dispatch(update_node(change.obj));
-}
-
-function onDelete(change, partial) {
-  store.dispatch(delete_node(change.key));
-}
-
-function onBulk(data) {
-  store.dispatch(bulk_node(data));
-}
-
-function buildBulkRequest(changes) {
-  const bulk = {
-    create: [],
-    update: [],
-    delete: []
-  };
-  changes.forEach(function(change, partial) {
-    switch (change.type) {
-      case 1:
-        bulk.create.push(change.obj);
-        break;
-      case 2:
-        bulk.update.push(change.obj);
-        break;
-      case 3:
-        bulk.delete.push(change.key);
-        break;
-
-      default:
-        console.log(`Change type ${change.type} no handled.`);
-    }
-  });
-
-  return bulk;
-}
+// Note: this API requires redux@>=3.1.0
+export const store = createStore(
+  rootReducer,
+  composeEnhancers(applyMiddleware(thunk))
+);

@@ -1,5 +1,6 @@
-const TOKEN_KEY = "token";
-const USER_KEY = "user";
+const STORAGE = localStorage;
+const TOKEN_KEY = "_NEkOT";
+const USER_KEY = "_REsU";
 
 /**
  * Store token on sessionStorage.
@@ -7,7 +8,7 @@ const USER_KEY = "user";
  * @param token
  */
 export function setLocalToken(token) {
-  sessionStorage.setItem(TOKEN_KEY, token);
+  STORAGE.setItem(TOKEN_KEY, token);
 }
 
 /**
@@ -16,7 +17,7 @@ export function setLocalToken(token) {
  * @param user
  */
 export function setLocalUser(user) {
-  sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+  STORAGE.setItem(USER_KEY, JSON.stringify(user));
 }
 
 /**
@@ -24,7 +25,7 @@ export function setLocalUser(user) {
  *
  */
 export function getLocalToken() {
-  return sessionStorage.getItem(TOKEN_KEY);
+  return STORAGE.getItem(TOKEN_KEY);
 }
 
 /**
@@ -32,7 +33,7 @@ export function getLocalToken() {
  *
  */
 export function getLocalUser() {
-  return JSON.parse(sessionStorage.getItem(USER_KEY));
+  return JSON.parse(STORAGE.getItem(USER_KEY));
 }
 
 /**
@@ -40,6 +41,32 @@ export function getLocalUser() {
  *
  */
 export function clearLocalStorage() {
-  sessionStorage.removeItem(TOKEN_KEY);
-  sessionStorage.removeItem(USER_KEY);
+  STORAGE.removeItem(TOKEN_KEY);
+  STORAGE.removeItem(USER_KEY);
+}
+
+export function registerStorageEvent(handler) {
+  window.addEventListener("storage", function(e) {
+    handler(e);
+  });
+}
+
+export function onUserChange(callNoUser, callNewUser) {
+  registerStorageEvent(e => {
+    if (e.key !== USER_KEY) return false;
+    try {
+      if (e.oldValue !== e.newValue) {
+        console.log(e.oldValue);
+        console.log(e.newValue);
+        if (!e.newValue) {
+          callNoUser();
+        } else {
+          const user = JSON.parse(e.newValue);
+          callNewUser(user);
+        }
+      }
+    } catch (e) {
+      console.log("Error on login switch.", e);
+    }
+  });
 }

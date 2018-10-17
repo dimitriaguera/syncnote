@@ -18,11 +18,11 @@ const cors = require("cors");
 // Enable CORS.
 app.use(
   cors({
-    credentials: true,
-    origin: (origin, callback) => {
-      if (config.whitelist.includes(origin)) return callback(null, true);
-      callback(new Error("Not allowed by CORS"));
-    }
+    // credentials: true,
+    // origin: (origin, callback) => {
+    //   if (config.whitelist.includes(origin)) return callback(null, true);
+    //   callback(new Error("Not allowed by CORS"));
+    // }
   })
 );
 

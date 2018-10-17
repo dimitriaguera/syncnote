@@ -1,6 +1,6 @@
-import { createDb, updateDb } from "./db";
+import { populateLocalDb, updateLocalDb } from "./local-db";
 import { get } from "./fetch";
-import { store } from "./reduxServ";
+import { store } from "./store";
 import { startBootLocalProcess } from "../redux/actions";
 import socket from "../services/socket";
 
@@ -12,13 +12,13 @@ export const initialize = () => {
 
 export const createDbFromRemote = async user => {
   const { data } = await get(`/node/${user._id}`);
-  const result = await createDb(data);
+  const result = await populateLocalDb(data);
   return result;
 };
 
 export const push = async data => {
   // Update local indexDB.
-  updateDb(data);
+  updateLocalDb(data);
   socket.emit("push", data, resp => {
     console.log("resp after push: ", resp);
     //@Todo : handle response to manage conflicts.
@@ -36,5 +36,5 @@ export const push_bulk = async data => {
 
 export async function pullHandler(data) {
   console.log("from pull: ", data);
-  updateDb(data);
+  updateLocalDb(data);
 }

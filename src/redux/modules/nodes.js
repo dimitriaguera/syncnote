@@ -5,7 +5,7 @@ import {
   UPDATE_NODE,
   DELETE_NODE,
   CLEAR_NODE
-} from "../actions";
+} from "../_constants";
 
 const initialState = {};
 

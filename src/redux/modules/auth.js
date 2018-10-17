@@ -3,7 +3,7 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
   LOGOUT
-} from "../actions";
+} from "../_constants";
 import { getLocalUser } from "../../services/session";
 
 const user = getLocalUser();

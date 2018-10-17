@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
-import "./services/socket";
-import { store } from "./services/reduxServ";
+import { store } from "./services/store";
 import { Provider } from "react-redux";
 import Boot from "./Boot";
+import "./services/socket";
+import "./services/auth-event";
 
 ReactDOM.render(
   <Provider store={store}>
