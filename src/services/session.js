@@ -56,8 +56,6 @@ export function onUserChange(callNoUser, callNewUser) {
     if (e.key !== USER_KEY) return false;
     try {
       if (e.oldValue !== e.newValue) {
-        console.log(e.oldValue);
-        console.log(e.newValue);
         if (!e.newValue) {
           callNoUser();
         } else {

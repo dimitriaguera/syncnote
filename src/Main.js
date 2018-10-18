@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import FormNode from "./FormNode";
+import NodeAdd from "./NodeAdd";
 import NodeList from "./NodeList";
 
 class List extends Component {
   render() {
     return (
       <div className="main">
-        <FormNode />
+        <NodeAdd />
         <NodeList />
       </div>
     );

@@ -10,6 +10,7 @@ const authRoute = require("./server/auth/route");
 const authModel = require("./server/auth/model");
 const nodeRoute = require("./server/node/route");
 const nodeModel = require("./server/node/model");
+const syncRoute = require("./server/sync/route");
 const strategy = require("./server/auth/strategy");
 const socketConnect = require("./server/socket/connect");
 const app = express();
@@ -46,6 +47,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
     // Set route.
     authRoute(app);
     nodeRoute(app);
+    syncRoute(app);
 
     // Init Connect socket.
     const serve = socketConnect(app);

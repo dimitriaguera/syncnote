@@ -1,6 +1,13 @@
 import { loginFetch } from "../services/auth-api";
-import { createDbFromRemote } from "../services/sync";
-import { initLocalDb, clearLocalDb, getAllTables } from "../services/local-db";
+import {
+  populateLocalDbFromRemote,
+  syncLocalDbToRemote
+} from "../services/sync";
+import {
+  initLocalDb,
+  clearLocalDb,
+  getAllLocalNodes
+} from "../services/local-db";
 import socket from "../services/socket";
 import {
   setLocalToken,
@@ -27,7 +34,7 @@ import {
   ALERT_INFO,
   ALERT_CLEAR,
   ALERT_ERROR
-} from "./_constants";
+} from "../globals/_action_types";
 
 export const boot_start = () => {
   return { type: BOOT_START };
@@ -48,22 +55,38 @@ export const startBootLocalProcess = async dispatch => {
       // Login user.
       await dispatch(login_success(user));
       // Create local user db.
-      initLocalDb(user);
+      await initLocalDb(user);
       // Get IndexDb datas.
-      const data = await getAllTables();
+      const data = await getAllLocalNodes();
       // Set app state from datas.
       await dispatch(bulk_create_nodes(data.nodes));
       // Connecy to socket.
       socket.open();
       // End boot process.
-      dispatch(boot_success());
+      await dispatch(boot_success());
+      // Return user booted.
+      return user;
     } else {
       dispatch(boot_success());
+      return null;
     }
   } catch (err) {
     clearLocalDb();
     clearLocalStorage();
     dispatch(boot_failure(err));
+    return null;
+  }
+};
+
+export const startSynchingProcess = async dispatch => {
+  try {
+    const user = getLocalUser();
+    if (user) {
+      console.log("Start syncing process...");
+      syncLocalDbToRemote();
+    }
+  } catch (err) {
+    console.log("Error during synching process launch...", err);
   }
 };
 
@@ -90,17 +113,31 @@ export const msg_clear = () => {
 
 export const login = (username, password) => {
   return async dispatch => {
-    dispatch(login_request());
     try {
+      // Get user.
+      const lastUser = getLocalUser();
+      // Test if already logged.
+      if (lastUser && lastUser.username === username) {
+        return dispatch(msg_success(`${username} already logged.`));
+      }
+      // Start Login process.
+      dispatch(login_request());
+      // Get token form server.
       const { user, token } = await loginFetch(username, password);
+      // Close current socket.
       socket.close();
+      // Store roken and user object.
       setLocalToken(token);
       setLocalUser(user);
+      // Login ok.
       dispatch(login_success(user));
-      initLocalDb(user);
-      createDbFromRemote(user);
+      // Create localDb.
+      await initLocalDb(user);
+      // Populate localDb.
+      await populateLocalDbFromRemote(user);
       socket.open();
       dispatch(msg_success(`Successful logged as ${user.username}`));
+      await dispatch(startSynchingProcess);
     } catch (err) {
       socket.close();
       clearLocalDb();
@@ -111,14 +148,14 @@ export const login = (username, password) => {
   };
 };
 
-export const switchLogin = user => {
+export const switchLogin = async user => {
   return async dispatch => {
     dispatch(login_request());
     try {
       socket.close();
       dispatch(login_success(user));
-      initLocalDb(user);
-      createDbFromRemote(user);
+      await initLocalDb(user);
+      await populateLocalDbFromRemote(user);
       socket.open();
       dispatch(msg_success(`Successful logged as ${user.username}`));
     } catch (err) {

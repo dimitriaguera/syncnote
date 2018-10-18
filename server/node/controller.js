@@ -7,6 +7,7 @@ module.exports = {
   routerPut,
   routerDeleteNode,
   getNodeById,
+  getNodeByUserId,
   addNode,
   updateNodeById,
   deleteNodeById
@@ -60,7 +61,7 @@ async function updateNodeById(id, update) {
   return await mongodb
     .getDb()
     .collection("node")
-    .replaceOne({ _id: id }, update);
+    .replaceOne({ _id: id }, update, { upsert: true });
 }
 
 async function deleteNodeById(nodeId) {

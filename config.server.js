@@ -6,7 +6,7 @@ module.exports = {
   db: {
     database: "syncnote",
     host: "localhost",
-    port: "27017",
+    port: "27018",
     user: "",
     password: ""
   },

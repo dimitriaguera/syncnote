@@ -10,17 +10,9 @@ module.exports = {
 };
 
 function init() {
-  mongodb.getDb().createCollection(
-    "node",
-    {
-      capped: true,
-      size: 100000,
-      max: 5000
-    },
-    function(err, results) {
-      console.log("Collection node created.");
-    }
-  );
+  mongodb.getDb().createCollection("node", {}, function(err, results) {
+    console.log("Collection node created.");
+  });
 }
 
 function nodeFactory(data, user) {

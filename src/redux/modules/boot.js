@@ -1,4 +1,8 @@
-import { BOOT_START, BOOT_SUCCESS, BOOT_FAILURE } from "../_constants";
+import {
+  BOOT_START,
+  BOOT_SUCCESS,
+  BOOT_FAILURE
+} from "../../globals/_action_types";
 
 const initialState = { bootStatus: 0 };
 

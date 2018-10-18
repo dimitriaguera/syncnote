@@ -4,7 +4,7 @@ import {
   ALERT_INFO,
   ALERT_CLEAR,
   ALERT_ERROR
-} from "../_constants";
+} from "../../globals/_action_types";
 
 const initialState = {};
 

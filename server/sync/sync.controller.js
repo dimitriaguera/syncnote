@@ -1,7 +1,6 @@
-const chalk = require("chalk");
-const { updateNodeById } = require("../node/controller");
+const { updateNodeById, getNodeByUserId } = require("../node/controller");
 const { broadcastOwnerAndShare } = require("../socket/manager");
-const { nodeFactory, nodeMerge, preparNodeToUpdate } = require("../node/model");
+const { preparNodeToUpdate } = require("../node/model");
 
 module.exports = {
   registerToSync: socket => {
@@ -18,5 +17,10 @@ module.exports = {
         callback(err);
       }
     }
+  },
+
+  getUserNode: async (req, res, next) => {
+    const nodes = await getNodeByUserId(req.user._id);
+    res.json(nodes);
   }
 };
