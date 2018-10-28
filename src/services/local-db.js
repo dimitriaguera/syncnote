@@ -2,7 +2,16 @@ import Dexie from "dexie";
 import "dexie-observable";
 import { changeInAppState } from "./app-state";
 import { formatUploadedNodes } from "./node-factory";
-import { SYNC_STATUS_OK } from "../globals/_sync_status";
+import {
+  SYNC_WAIT_OK,
+  SYNC_WAIT_CREA,
+  SYNC_WAIT_UPT,
+  SYNC_WAIT_DEL,
+  SYNC_STATUS_DONE,
+  SYNC_STATUS_PENDING,
+  SYNC_STATUS_CONFLICT,
+  SYNC_STATUS_ERROR
+} from "../globals/_sync_status";
 
 let _DB = null;
 
@@ -20,13 +29,6 @@ export const initLocalDb = async user => {
   _DB.on("changes", changeInAppState);
 };
 
-export const populateLocalDb = async (data, opt) => {
-  return _DB.transaction("rw", _DB.nodes, async () => {
-    const nodes = formatUploadedNodes(data, opt);
-    return await _DB.nodes.bulkPut(nodes);
-  });
-};
-
 export const getAllLocalNodes = async () => {
   const data = await Promise.all([_DB.nodes.toArray()]);
   return {
@@ -34,19 +36,50 @@ export const getAllLocalNodes = async () => {
   };
 };
 
+export const getNodesToSync = async () => {
+  return await _DB.nodes.toArray();
+};
+
+export const populateLocalDb = async (data, opt) => {
+  return _DB.transaction("rw", _DB.nodes, async () => {
+    const nodes = formatUploadedNodes(data, opt);
+    return await _DB.nodes.bulkPut(nodes);
+  });
+};
+
 export const clearLocalDb = async () => {
   if (!_DB) return null;
   return await _DB.nodes.clear();
 };
 
-export const updateLocalDb = async data => {
-  return await _DB.nodes.put(data);
+export const putNodeToLocalDb = async node => {
+  return await _DB.nodes.put(node);
 };
 
-// FAKE !!!! CHANGE TO BUILD TRUE ARRAY.
-export const getNodesToSync = async () => {
-  return await _DB.nodes
-    //.where("_sync")
-    //.equals(SYNC_STATUS_OK)
-    .toArray();
+export const updateNodeToLocalDb = async (id, update) => {
+  return await _DB.nodes.update(id, update);
+};
+
+export const deleteNodeToLocalDb = async id => {
+  return await _DB.nodes.delete(id);
+};
+
+export const bulkAddNodeToLocalDb = async nodes => {
+  return await _DB.nodes.bulkAdd(nodes);
+};
+
+export const bulkUpdateNodeToLocalDb = async nodes => {
+  return await Promise.all(
+    nodes.map(node => {
+      return _DB.nodes.update(node._id, node);
+    })
+  );
+};
+
+export const bulkPutNodeToLocalDb = async nodes => {
+  return await _DB.nodes.bulkPut(nodes);
+};
+
+export const bulkDeleteNodeToLocalDb = async id => {
+  return await _DB.nodes.bulkDelete(id);
 };

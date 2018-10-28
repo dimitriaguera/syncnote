@@ -7,6 +7,7 @@ module.exports = {
   routerPut,
   routerDeleteNode,
   getNodeById,
+  getAllNodes,
   getNodeByUserId,
   addNode,
   updateNodeById,
@@ -33,6 +34,14 @@ async function routerDeleteNode(req, res) {
 async function routerGetAllUserNode(req, res) {
   const data = await getNodeByUserId(req._userId);
   res.json(data);
+}
+
+async function getAllNodes() {
+  return await mongodb
+    .getDb()
+    .collection("node")
+    .find()
+    .toArray();
 }
 
 async function getNodeByUserId(userId) {

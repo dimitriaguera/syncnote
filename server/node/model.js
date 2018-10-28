@@ -16,7 +16,7 @@ function init() {
 }
 
 function nodeFactory(data, user) {
-  const { name, parent, shared } = data;
+  const { _id, _tId, name, parent, shared } = data;
 
   if (!name) {
     const err = new Error("You must give a name.");
@@ -31,12 +31,13 @@ function nodeFactory(data, user) {
   }
 
   return {
-    _id: uuidv1(),
+    _id: _id || uuidv1(),
+    _tId: _tId,
+    _rev: uuidv1(),
     name: name,
     owner: user._id,
     parent: parent || null,
-    shared: shared || [],
-    _rev: uuidv1()
+    shared: shared || []
   };
 }
 
@@ -70,8 +71,15 @@ function preparNodeToUpdate(update) {
     throw err;
   }
 
-  const _node = Object.assign({}, update);
-  _node._rev = uuidv1();
+  const _node = {
+    _id: update._id,
+    _tId: update.tId,
+    _rev: uuidv1(),
+    name: update.name,
+    owner: update._id,
+    parent: update.parent,
+    shared: update.shared
+  };
 
   return _node;
 }

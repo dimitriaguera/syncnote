@@ -11,6 +11,7 @@ const authModel = require("./server/auth/model");
 const nodeRoute = require("./server/node/route");
 const nodeModel = require("./server/node/model");
 const syncRoute = require("./server/sync/route");
+const broker = require("./server/share/broker");
 const strategy = require("./server/auth/strategy");
 const socketConnect = require("./server/socket/connect");
 const app = express();
@@ -43,6 +44,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
     // Set models.
     authModel.init();
     nodeModel.init();
+
+    // Start borker.
+    broker.init();
 
     // Set route.
     authRoute(app);

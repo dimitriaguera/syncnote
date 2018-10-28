@@ -17,6 +17,15 @@ module.exports = {
     });
   },
 
+  emitToConcernedUsers: (io, room, cuIds, data) => {
+    cuIds.forEach(uid => {
+      if (!_SOCKET_USER_STORE[uid]) return;
+      _SOCKET_USER_STORE[uid].forEach(sId => {
+        io.to(sId).emit(room, data);
+      });
+    });
+  },
+
   unregisterUser: socket => {
     const uID = socket.userId;
     const sID = socket.id;
