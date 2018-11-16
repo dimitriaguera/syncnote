@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const { getAllNodes } = require("../node/controller");
 
 const USERS_NODES_CONCERN = {};
@@ -26,7 +27,7 @@ module.exports = {
 
   update: (nId, updates) => {
     if (updates.shared || updates.owner) {
-      const cuIds = updateConcernedUsersIds(updates);
+      const cuIds = updateConcernedUsersIds(_.cloneDeep(updates));
       USERS_NODES_CONCERN[nId] = cuIds;
       console.log("update broker: ", USERS_NODES_CONCERN);
       return cuIds;

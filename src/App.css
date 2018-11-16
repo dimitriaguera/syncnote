@@ -23,6 +23,16 @@
 .App-link {
   color: #61dafb;
 }
+.node-status-0 {
+  color: green;
+}
+.node-status-1 {
+  color: blue;
+}
+
+.node-status-2 {
+  color: red;
+}
 
 @keyframes App-logo-spin {
   from {

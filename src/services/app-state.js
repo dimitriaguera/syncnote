@@ -7,7 +7,9 @@ import {
 } from "../redux/actions";
 
 export const changeInAppState = changes => {
+  console.log("CHANGES : ", changes);
   const data = buildBulkRequest(changes);
+  console.log("DATA : ", data);
   onBulk(data);
 };
 

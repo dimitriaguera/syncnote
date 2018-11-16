@@ -24,14 +24,14 @@ export function nodes(state = initialState, action) {
       return nState;
     case BULK_NODE:
       nState = Object.assign({}, state);
-      action.data.delete.forEach(id => {
-        delete nState[id];
-      });
       action.data.create.forEach(node => {
         nState[node._id] = node;
       });
       action.data.update.forEach(node => {
         nState[node._id] = Object.assign({}, state[node._id], node);
+      });
+      action.data.delete.forEach(id => {
+        delete nState[id];
       });
       return nState;
     case UPDATE_NODE:

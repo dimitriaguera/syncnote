@@ -2,7 +2,7 @@ import { loginFetch } from "../services/auth-api";
 import {
   populateLocalDbFromRemote,
   syncLocalDbToRemote
-} from "../services/sync";
+} from "../services/sync/sync";
 import {
   initLocalDb,
   clearLocalDb,

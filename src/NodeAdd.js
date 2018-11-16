@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { push } from "./services/sync";
-import { buildNode } from "./services/node-factory";
+import { push } from "./services/sync/sync";
+//import { buildNode } from "./services/node-factory";
 
 class NodeAdd extends Component {
   constructor(props) {
@@ -29,8 +29,11 @@ class NodeAdd extends Component {
     let s = shared.split(",");
     s = !s[0] ? [] : s;
     if (!name) return;
-    const node = buildNode(name, s);
-    push(node);
+    //const node = buildNode(name, s);
+    push({
+      type: "add",
+      data: { name: name }
+    });
     event.preventDefault();
   }
   render() {

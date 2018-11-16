@@ -14,7 +14,6 @@ export default {
   },
 
   emit: (room, data, callback) => {
-    console.log("SOCKET TRUE EMIT", room, data);
     _SOCKET.emit(room, data, callback);
   },
 

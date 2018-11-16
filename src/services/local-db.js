@@ -2,16 +2,6 @@ import Dexie from "dexie";
 import "dexie-observable";
 import { changeInAppState } from "./app-state";
 import { formatUploadedNodes } from "./node-factory";
-import {
-  SYNC_WAIT_OK,
-  SYNC_WAIT_CREA,
-  SYNC_WAIT_UPT,
-  SYNC_WAIT_DEL,
-  SYNC_STATUS_DONE,
-  SYNC_STATUS_PENDING,
-  SYNC_STATUS_CONFLICT,
-  SYNC_STATUS_ERROR
-} from "../globals/_sync_status";
 
 let _DB = null;
 
@@ -24,7 +14,10 @@ export const initLocalDb = async user => {
     await _DB.delete();
   }
   _DB = new Dexie(getDbName(user._id));
-  _DB.version(1).stores({ nodes: "&_id, _sync, name, parent, owner, *shared" });
+  _DB.version(1).stores({
+    nodes: "&_id, _sync_wait, _sync_status, name, parent, owner, *shared",
+    conflicts: "&_id"
+  });
   await _DB.open();
   _DB.on("changes", changeInAppState);
 };
@@ -49,6 +42,7 @@ export const populateLocalDb = async (data, opt) => {
 
 export const clearLocalDb = async () => {
   if (!_DB) return null;
+  await _DB.conflicts.clear();
   return await _DB.nodes.clear();
 };
 
@@ -56,11 +50,16 @@ export const putNodeToLocalDb = async node => {
   return await _DB.nodes.put(node);
 };
 
+export const getLocalNodeById = async id => {
+  return await _DB.nodes.get(id);
+};
+
 export const updateNodeToLocalDb = async (id, update) => {
   return await _DB.nodes.update(id, update);
 };
 
 export const deleteNodeToLocalDb = async id => {
+  console.log("DEXIE DELETE : ", id);
   return await _DB.nodes.delete(id);
 };
 
@@ -82,4 +81,12 @@ export const bulkPutNodeToLocalDb = async nodes => {
 
 export const bulkDeleteNodeToLocalDb = async id => {
   return await _DB.nodes.bulkDelete(id);
+};
+
+export const putConflictToLocalDb = async conflict => {
+  return await _DB.conflicts.put(conflict);
+};
+
+export const getConflictById = async id => {
+  return await _DB.conflicts.get(id);
 };

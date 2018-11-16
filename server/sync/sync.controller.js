@@ -1,23 +1,21 @@
-const { updateNodeById, getNodeByUserId } = require("../node/controller");
+const {
+  getNodeById,
+  updateNodeById,
+  getNodeByUserId
+} = require("../node/controller");
 //const { broadcastOwnerAndShare } = require("../socket/manager");
 const { preparNodeToUpdate } = require("../node/model");
 const mongodb = require("../db/mongodb");
-
-const uuidv1 = require("uuid/v1");
 
 const SYNC_WAIT_OK = 0;
 const SYNC_WAIT_CREA = 1;
 const SYNC_WAIT_UPT = 2;
 const SYNC_WAIT_DEL = 3;
-const SYNC_STATUS_DONE = 0;
-const SYNC_STATUS_PENDING = 1;
-const SYNC_STATUS_CONFLICT = 2;
-const SYNC_STATUS_ERROR = 3;
 
 module.exports = {
   registerToSync: socket => {
     // Register on socket event.
-    socket.on("push", pushHandlerBuilder(socket, "pull"));
+    socket.on("push", pushHandlerBuilder(socket, "push_ok", "push_errors"));
     socket.on("sync", syncHanlerBuilder(socket, "sync_ok", "sync_errors"));
   }
 };
@@ -55,13 +53,36 @@ function syncHanlerBuilder(socket, roomOk, roomError) {
 }
 
 // Emit changes to all Sockets clients.
-function pushHandlerBuilder(socket, room) {
-  return async (data, send) => {
+function pushHandlerBuilder(socket, roomOk, roomError) {
+  return async (localNode, send) => {
     try {
-      const _node = preparNodeToUpdate(data);
-      const rapport = await updateNodeById(_node._id, _node);
-      //broadcastOwnerAndShare(socket, room, _node);
-      send(rapport);
+      // Get node's ID.
+      const _nId = localNode._id;
+
+      // Get node in remote db.
+      const remoteNode = await getNodeById(_nId);
+      console.log(remoteNode);
+
+      // Compare all nodes and dispatch on right sync action.
+      const { _actions, _bulk } = await compareForSync(
+        remoteNode ? [remoteNode] : [],
+        {
+          [_nId]: localNode
+        }
+      );
+
+      // Send immediate CRUD or CONFLICT actions to perform in local.
+      send(_actions);
+
+      // Execute CRUD sync op in remote DB and get errors.
+      if (_bulk.length) {
+        try {
+          const bulkResult = await _bulk.execute();
+          socket.emit(roomOk, bulkResult);
+        } catch (err) {
+          socket.emit(roomError, err);
+        }
+      }
     } catch (err) {
       console.error(err);
       send(err);
@@ -69,74 +90,61 @@ function pushHandlerBuilder(socket, room) {
   };
 }
 
+class Action {
+  constructor() {
+    this.type = null;
+    this.data = null;
+  }
+  add(data) {
+    this.type = "add";
+    this.data = data;
+    return this;
+  }
+  update(data) {
+    this.type = "update";
+    this.data = data;
+    return this;
+  }
+  remove(data) {
+    this.type = "remove";
+    this.data = data;
+    return this;
+  }
+  ok(data) {
+    this.type = "ok";
+    this.data = data;
+    return this;
+  }
+  conflict(data) {
+    this.type = "conflict";
+    this.data = data;
+    return this;
+  }
+  getType() {
+    return this.type;
+  }
+  getData() {
+    return this.data;
+  }
+}
+
 async function compareForSync(remoteNodes, localNodes) {
-  const _actions = { conflicts: [], add: [], update: [], remove: [], ok: [] };
+  const _actions = [];
   const local = Object.assign({}, localNodes);
   const bulk = mongodb
     .getDb()
     .collection("node")
     .initializeUnorderedBulkOp();
 
-  // bulk.insert({
-  //   _id: "36cdcc60-d92e-11e8-914a-0b0ae10498c5",
-  //   _tId: uuidv1(),
-  //   _rev: uuidv1(),
-  //   name: "pfff
-  // bulk.find({ _id: "test1" }).removeOne();
-  // bulk.find({ _id: "test2" }).removeOne();f",
-  //   owner: "user1",
-  //   parent: null,
-  //   shared: []
-  // });
-
-  bulk.insert({
-    _id: "test1",
-    _tId: uuidv1(),
-    _rev: uuidv1(),
-    name: "pffff",
-    owner: "user1",
-    parent: null,
-    shared: []
-  });
-
-  bulk.insert({
-    _id: "test2",
-    _tId: uuidv1(),
-    _rev: uuidv1(),
-    name: "pffff",
-    owner: "user1",
-    parent: null,
-    shared: []
-  });
-
-  bulk
-    .find({
-      _id: "36cdcc60-d92e-11e8-914a-0b0ae10498c5"
-    })
-    .removeOne();
-  bulk.find({ _id: "test1" }).removeOne();
-  bulk.find({ _id: "test2" }).removeOne();
-  bulk.find({ _id: "test1" }).updateOne({ $set: { name: "pfff1" } });
-  bulk.find({ _id: "test2" }).updateOne({ $set: { name: "pfff2" } });
-
-  bulk.insert({
-    _id: uuidv1(),
-    _tId: uuidv1(),
-    _rev: uuidv1(),
-    name: "pffff",
-    owner: "user1",
-    parent: null,
-    shared: []
-  });
-
   remoteNodes.forEach(remoteNode => {
     // Get current local node.
     const localNode = local[remoteNode._id];
+    const _action = new Action();
 
     // If remote node doesn't exit in local, create it.
     if (!localNode) {
       // CREATE IN LOCAL
-      _actions.add.push(remoteNode);
+      _actions.push(_action.add(remoteNode));
       return;
     }
 
@@ -148,15 +156,19 @@ async function compareForSync(remoteNodes, localNodes) {
       switch (localNode._sync_wait) {
         case SYNC_WAIT_OK:
           // END OK SYNC TO LOCAL.
-          _actions.ok.push(remoteNode._id);
+          _actions.push(
+            _action.ok({ _id: remoteNode._id, _tId: localNode._tId })
+          );
           break;
         case SYNC_WAIT_CREA:
           // ALREADY EXIST IN REMOTE
-          _actions.conflicts.push({
-            code: "EXIST",
-            text: "Node already exist in remote DB",
-            nId: remoteNode._id
-          });
+          _actions.push(
+            _action.conflict({
+              code: "EXIST",
+              text: "Node already exist in remote DB",
+              nId: remoteNode._id
+            })
+          );
           break;
         case SYNC_WAIT_UPT:
           // UPDT TO REMOTE
@@ -184,31 +196,37 @@ async function compareForSync(remoteNodes, localNodes) {
       switch (localNode._sync_wait) {
         case SYNC_WAIT_OK:
           // UPDT TO LOCAL
-          _actions.update.push(remoteNode);
+          _actions.push(_action.update(remoteNode));
           break;
         case SYNC_WAIT_CREA:
           // CONFLICT ID ALREADY EXIST
-          _actions.conflicts.push({
-            code: "EXIST",
-            text: "Node already exist in remote DB",
-            rNode: remoteNode
-          });
+          _actions.push(
+            _action.conflict({
+              code: "EXIST",
+              text: "Node already exist in remote DB",
+              rNode: remoteNode
+            })
+          );
           break;
         case SYNC_WAIT_UPT:
           // CONFLICT MERGE REQUEST
-          _actions.conflicts.push({
-            code: "MERGE",
-            text: "Node update conflict",
-            rNode: remoteNode
-          });
+          _actions.push(
+            _action.conflict({
+              code: "MERGE",
+              text: "Node update conflict",
+              rNode: remoteNode
+            })
+          );
           break;
         case SYNC_WAIT_DEL:
           // CONFLICT DEL NODE UPDATED
-          _actions.conflicts.push({
-            code: "DEL_UPDT",
-            text: "Node to delete have been updated bedore",
-            rNode: remoteNode
-          });
+          _actions.push(
+            _action.conflict({
+              code: "DEL_UPDT",
+              text: "Node to delete have been updated bedore",
+              rNode: remoteNode
+            })
+          );
           break;
         default:
           break;
@@ -220,10 +238,12 @@ async function compareForSync(remoteNodes, localNodes) {
   // Those nodes are new created in local, or deleted in remote.
   Object.keys(local).forEach(key => {
     const localNode = local[key];
+    const _action = new Action();
+
     switch (localNode._sync_wait) {
       case SYNC_WAIT_OK:
         // DELETE LOCAL
-        _actions.remove.push(localNode);
+        _actions.push(_action.remove(localNode));
         break;
       case SYNC_WAIT_CREA:
         // ADD TO REMOTE
@@ -231,7 +251,7 @@ async function compareForSync(remoteNodes, localNodes) {
         break;
       case SYNC_WAIT_UPT:
         // DELETE LOCAL - better to create remote ???
-        _actions.remove.push(localNode);
+        _actions.push(_action.remove(localNode));
         break;
       case SYNC_WAIT_DEL:
         // NOTHING : local poubelle process.

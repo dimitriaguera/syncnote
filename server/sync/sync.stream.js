@@ -15,6 +15,13 @@ module.exports = {
           cuIds = broker.get(data.documentKey._id);
           break;
         case "update":
+          broker.update(
+            data.documentKey._id,
+            data.updateDescription.updatedFields
+          );
+          cuIds = broker.get(data.documentKey._id);
+          break;
+        case "replace":
           broker.update(data.documentKey._id, data.fullDocument);
           cuIds = broker.get(data.documentKey._id);
           break;
@@ -28,6 +35,7 @@ module.exports = {
 
       // Then emit changes to all concerned users sockets.
       // The handler emit changes on room "sync_change" to sockets clients if concerned.
+      console.log("TRUE DATA change emit: ", data);
       emitToConcernedUsers(io, "sync_change", cuIds, data);
     });
   }
