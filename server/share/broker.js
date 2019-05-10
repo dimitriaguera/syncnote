@@ -29,7 +29,7 @@ module.exports = {
     if (updates.shared || updates.owner) {
       const cuIds = updateConcernedUsersIds(_.cloneDeep(updates));
       USERS_NODES_CONCERN[nId] = cuIds;
-      console.log("update broker: ", USERS_NODES_CONCERN);
+      console.log("UPDATE BROKER : ", USERS_NODES_CONCERN);
       return cuIds;
     }
     return null;
@@ -38,7 +38,7 @@ module.exports = {
   store: node => {
     const cuIds = extractConcernedUsersIds(node);
     USERS_NODES_CONCERN[node._id] = cuIds;
-    console.log("store broker: ", USERS_NODES_CONCERN);
+    console.log("STORE BROKER : ", USERS_NODES_CONCERN);
     return cuIds;
   },
 

@@ -55,6 +55,21 @@ function initSocket(path) {
 }
 
 function errorSocketEvents(socket) {
+  // Catch connection ok.
+  socket.on("connect", function(err) {
+    console.log("Socket opened.");
+  });
+
+  // Catch disconnection ok.
+  socket.on("disconnect", function(err) {
+    console.log("Socket closed.");
+  });
+
+  // Catch reconnection ok.
+  socket.on("reconnect", function(err) {
+    console.log("Socket re-opened.");
+  });
+
   // Catch error send by server.
   socket.on("error", function(err) {
     console.log("Server socket sent an error", err);

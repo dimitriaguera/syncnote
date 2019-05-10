@@ -1,5 +1,11 @@
 import { LocalSyncBulk, LocalSync } from "./sync.class";
-import { populateLocalDb, putNodeToLocalDb } from "../local-db";
+import {
+  populateLocalDb,
+  putNodeToLocalDb,
+  getLocalNodeById,
+  updateNodeToLocalDb
+} from "../local-db";
+import { getReferentNode, isOffline } from "../app-state";
 import { get } from "../fetch";
 import {
   prepareLocalNodeBeforeCreatePush,
@@ -58,14 +64,22 @@ export const push = async _action => {
   try {
     // Prepare node to sync.
 
-    const { toRemote, toLocal } = prepareNodeToPush(_action, "_id");
+    const { toRemote, toLocal, localDbAction } = await prepareNodeToPush(
+      _action,
+      "_id"
+    );
 
     console.log("Push remote data: ", toRemote);
     console.log("Push local data: ", toLocal);
 
     // Update local indexDBbefore emtting to remote.
     // This is to allow working offline.
-    await putNodeToLocalDb(toLocal);
+    await localDbAction();
+
+    // @TODO : TO REMOTE !!!
+    // Simulate offline mode.
+    // If offline mode, abord.
+    if( isOffline() ) return;
 
     // Emit on push room.
     socket.emit("push", toRemote, resp => {
@@ -80,23 +94,32 @@ export const push = async _action => {
 // Prepare data before sending to remote via push socket room.
 // Need to be formatted for both local and remote DB.
 // Need to be formatted according to action type: add, update or remove.
-function prepareNodeToPush(_action, key) {
+async function prepareNodeToPush(_action, key) {
   const { type, data } = _action;
+  let localDbAction = null;
   let node = null;
   switch (type) {
     case "add":
       node = prepareLocalNodeBeforeCreatePush(data);
+      localDbAction = putNodeToLocalDb.bind(null, node);
       break;
     case "update":
-      node = prepareLocalNodeBeforeUpdatePush(data);
+      const localNode = await getLocalNodeById(_action.data._id);
+      node = prepareLocalNodeBeforeUpdatePush(data, localNode);
+      localDbAction = updateNodeToLocalDb.bind(null, node._id, node);
       break;
     case "remove":
       node = prepareLocalNodeBeforeDeletePush(data);
+      localDbAction = updateNodeToLocalDb.bind(null, node._id, node);
       break;
     default:
       break;
   }
-  return { toRemote: clearNodeToRemoteSync(node, node._tId), toLocal: node };
+  return {
+    toRemote: clearNodeToRemoteSync(node, node._tId),
+    toLocal: node,
+    localDbAction
+  };
 }
 
 // Handler listening socket blabla.
@@ -117,6 +140,12 @@ function syncOkHandler(data) {
   console.log("from sync_ok: ", data);
 }
 async function syncChange(data) {
+
+  // @TODO TO REMOVE !!!
+  // Simulate offline mode.
+  // If offline mode, abord.
+  if( isOffline() ) return;
+
   console.log("from sync_change: ", data);
   const sync = new LocalSync();
   await sync.handleRemoteStream(data);

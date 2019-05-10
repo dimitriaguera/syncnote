@@ -1,0 +1,7 @@
+BUGS :
+
+SERV
+Lors d'un auth, si token envoyé au web socke invalide, serveur plante.
+
+FRONT
+Si conflit retourné par le socket pour edition d'un node, celui-ci perd son parentID.

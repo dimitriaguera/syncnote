@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import {
   putNodeToLocalDb,
   updateNodeToLocalDb,
@@ -50,10 +51,6 @@ class LocalSyncBulk {
     // TODO Check if remote connection enabled.
   }
 
-  getRemote() {
-    return this.toRemote;
-  }
-
   async handleRemoteResponse(response) {
     for (let i = 0, l = response.length; i < l; i++) {
       const { type, data } = response[i];
@@ -64,6 +61,38 @@ class LocalSyncBulk {
     }
 
     await this.run();
+  }
+
+  async run() {
+    console.log(chalk.yellow("LOCAL RUNNER : "));
+    console.log(this.queue);
+    console.log(chalk.yellow("------------------------------"));
+    const running = [];
+    if (this.queue.add.length)
+      running.push(bulkAddNodeToLocalDb(this.queue.add));
+    if (this.queue.update.length)
+      running.push(bulkUpdateNodeToLocalDb(this.queue.update));
+    if (this.queue.remove.length)
+      running.push(bulkDeleteNodeToLocalDb(this.queue.remove));
+    if (this.queue.ok.length)
+      running.push(bulkUpdateNodeToLocalDb(this.queue.ok));
+    if (this.queue.conflict.length) {
+      // running.push(bulkPutNodeToLocalDb(this.queue.conflict));
+      const logAllConflicts = new Promise((res, rej) => {
+        this.queue.conflict.forEach(x => console.warn("conflictObj : ", x));
+        res();
+      });
+      running.push(logAllConflicts);
+    }
+    try {
+      await Promise.all(running);
+    } catch (err) {
+      console.log("LOCAL RUNNER ERRORS: ", err);
+    }
+  }
+
+  getRemote() {
+    return this.toRemote;
   }
 
   add(node) {
@@ -84,26 +113,6 @@ class LocalSyncBulk {
 
   conflict(conflictObject) {
     this.queue.conflict.push(prepareSyncedLocalNodeToConflict(conflictObject));
-  }
-
-  async run() {
-    console.log("LOCAL RUNNER : ", this.queue);
-    const running = [];
-    if (this.queue.add.length)
-      running.push(bulkAddNodeToLocalDb(this.queue.add));
-    if (this.queue.update.length)
-      running.push(bulkUpdateNodeToLocalDb(this.queue.update));
-    if (this.queue.remove.length)
-      running.push(bulkDeleteNodeToLocalDb(this.queue.remove));
-    if (this.queue.ok.length)
-      running.push(bulkUpdateNodeToLocalDb(this.queue.ok));
-    if (this.queue.conflict.length)
-      running.push(bulkPutNodeToLocalDb(this.queue.conflict));
-    try {
-      await Promise.all(running);
-    } catch (err) {
-      console.log("LOCAL RUNNER ERRORS: ", err);
-    }
   }
 }
 
@@ -293,7 +302,12 @@ async function checkConflict(_id, node, type) {
   }
 
   // Else, localNode change not saved, go conflict.
-  _action.conflict({ local: localNode });
+  _action.conflict({
+    code: "LOCAL_NO_SAVE",
+    from: "local",
+    text: "Local node change not saved",
+    rNode: localNode
+  });
   return _action;
 }
 

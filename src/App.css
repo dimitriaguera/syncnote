@@ -23,15 +23,18 @@
 .App-link {
   color: #61dafb;
 }
-.node-status-0 {
-  color: green;
+.node-status-0 .label {
+  color: white;
+  background-color: green;
 }
-.node-status-1 {
-  color: blue;
+.node-status-1 .label {
+  color: white;
+  background-color: blue;
 }
 
-.node-status-2 {
-  color: red;
+.node-status-2 .label {
+  color: white;
+  background-color: red;
 }
 
 @keyframes App-logo-spin {

@@ -1,3 +1,5 @@
+
+const chalk = require("chalk");
 const broker = require("../share/broker");
 const { emitToConcernedUsers } = require("../socket/manager");
 const { _nodeStream } = require("../node/stream");
@@ -35,7 +37,9 @@ module.exports = {
 
       // Then emit changes to all concerned users sockets.
       // The handler emit changes on room "sync_change" to sockets clients if concerned.
-      console.log("TRUE DATA change emit: ", data);
+      console.log(chalk.yellow("EMITED DATA : "));
+      console.log(data);
+      console.log(chalk.yellow("------------------------------"));
       emitToConcernedUsers(io, "sync_change", cuIds, data);
     });
   }

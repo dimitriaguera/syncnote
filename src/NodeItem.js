@@ -1,12 +1,16 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { readThisNode } from "./redux/actions";
 import { push } from "./services/sync/sync";
 
-class NoteItem extends Component {
+class NoteItemNoConnect extends Component {
   constructor(props) {
     super(props);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
     this.handleAdd = this.handleAdd.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
+    this.handleTestRunner = this.handleTestRunner.bind(this);
   }
 
   handleBlur(e) {
@@ -18,10 +22,41 @@ class NoteItem extends Component {
 
     const _action = {
       type: "update",
-      data: { ...node, name: value }
+      data: {
+        _id: node._id,
+        _rev: node._rev,
+        _sync_pool: node._sync_pool,
+        name: value
+      }
     };
 
     push(_action);
+  }
+
+  handleTestRunner(){
+
+    const delay = 100;
+    const loops = 3;
+    
+    let count = 0;
+
+    const testID = setInterval(() => {
+      if( count >=  loops ) {
+        clearInterval(testID);
+      }
+      count ++;
+      const node = this.props.node;
+      const _action = {
+        type: "update",
+        data: {
+          _id: node._id,
+          _rev: node._rev,
+          _sync_pool: node._sync_pool,
+          name: `Loop ${count}`
+        }
+      };
+      push(_action);
+    }, delay);
   }
 
   handleAdd(e) {
@@ -38,6 +73,11 @@ class NoteItem extends Component {
     push(_action);
   }
 
+  handleSelect(e) {
+    const node = this.props.node;
+    this.props.selectToWindow(node._id);
+  }
+
   render() {
     const { node, level } = this.props;
 
@@ -48,13 +88,25 @@ class NoteItem extends Component {
         className={classes.join(" ")}
         style={{ paddingLeft: `${level * 20}px` }}
       >
-        <label>{node.name}</label>
+        <button className="label" onClick={this.handleSelect}>
+          {node.name}
+        </button>
         <input type="text" onBlur={this.handleBlur} />
         <input type="button" value="Add" onClick={this.handleAdd} />
         <input type="button" value="X" onClick={this.handleRemove} />
+        <input type="button" value="Test" onClick={this.handleTestRunner} />
       </div>
     );
   }
 }
+
+const mapDispatchToProps = dispatch => {
+  return { selectToWindow: async _id => dispatch(await readThisNode(_id)) };
+};
+
+const NoteItem = connect(
+  null,
+  mapDispatchToProps
+)(NoteItemNoConnect);
 
 export default NoteItem;

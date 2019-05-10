@@ -1,3 +1,5 @@
+
+const chalk = require("chalk");
 const {
   getNodeById,
   updateNodeById,
@@ -61,7 +63,10 @@ function pushHandlerBuilder(socket, roomOk, roomError) {
 
       // Get node in remote db.
       const remoteNode = await getNodeById(_nId);
+
+      console.log(chalk.yellow("REMOTE NODE BEFORE UPDATE : "));
       console.log(remoteNode);
+      console.log(chalk.yellow("------------------------------"));
 
       // Compare all nodes and dispatch on right sync action.
       const { _actions, _bulk } = await compareForSync(
@@ -166,6 +171,7 @@ async function compareForSync(remoteNodes, localNodes) {
             _action.conflict({
               code: "EXIST",
               text: "Node already exist in remote DB",
+              from: "remote",
               nId: remoteNode._id
             })
           );
@@ -173,10 +179,8 @@ async function compareForSync(remoteNodes, localNodes) {
         case SYNC_WAIT_UPT:
           // UPDT TO REMOTE
           bulk
-            .find({
-              _id: localNode._id
-            })
-            .updateOne(preparNodeToUpdate(localNode));
+            .find({ _id: localNode._id })
+            .updateOne({ $set: preparNodeToUpdate(localNode) });
           break;
         case SYNC_WAIT_DEL:
           // DEL IN REMOTE
@@ -203,6 +207,7 @@ async function compareForSync(remoteNodes, localNodes) {
           _actions.push(
             _action.conflict({
               code: "EXIST",
+              from: "remote",
               text: "Node already exist in remote DB",
               rNode: remoteNode
             })
@@ -213,6 +218,7 @@ async function compareForSync(remoteNodes, localNodes) {
           _actions.push(
             _action.conflict({
               code: "MERGE",
+              from: "remote",
               text: "Node update conflict",
               rNode: remoteNode
             })
@@ -223,6 +229,7 @@ async function compareForSync(remoteNodes, localNodes) {
           _actions.push(
             _action.conflict({
               code: "DEL_UPDT",
+              from: "remote",
               text: "Node to delete have been updated bedore",
               rNode: remoteNode
             })

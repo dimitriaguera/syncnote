@@ -1,3 +1,4 @@
+const chalk = require("chalk");
 const mongodb = require("../db/mongodb");
 const uuidv1 = require("uuid/v1");
 const _ = require("lodash");
@@ -16,7 +17,7 @@ function init() {
 }
 
 function nodeFactory(data, user) {
-  const { _id, _tId, name, parent, children, shared } = data;
+  const { _id, _tId, name, parent, content, shared } = data;
 
   if (!name) {
     const err = new Error("You must give a name.");
@@ -37,7 +38,7 @@ function nodeFactory(data, user) {
     name: name,
     owner: user._id,
     parent: parent || null,
-    children: children || [],
+    content: content || null,
     shared: shared || []
   };
 }
@@ -72,16 +73,19 @@ function preparNodeToUpdate(update) {
     throw err;
   }
 
-  const _node = {
+  delete update._sync_status;
+  delete update._sync_wait;
+  //delete update.children;
+
+  const _node = Object.assign(update, {
     _id: update._id,
     _tId: update._tId,
-    _rev: uuidv1(),
-    name: update.name,
-    owner: update.owner,
-    parent: update.parent,
-    children: update.children,
-    shared: update.shared
-  };
+    _rev: uuidv1()
+  });
+
+  console.log(chalk.yellow("PREPARED NODE TO UPDATE : "));
+  console.log(_node);
+  console.log(chalk.yellow("------------------------------"));
 
   return _node;
 }

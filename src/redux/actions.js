@@ -1,3 +1,4 @@
+import { store } from "../services/store";
 import { loginFetch } from "../services/auth-api";
 import {
   populateLocalDbFromRemote,
@@ -6,7 +7,8 @@ import {
 import {
   initLocalDb,
   clearLocalDb,
-  getAllLocalNodes
+  getAllLocalNodes,
+  getLocalNodeById
 } from "../services/local-db";
 import socket from "../services/socket";
 import {
@@ -21,7 +23,7 @@ import {
   BOOT_FAILURE,
   CREATE_NODE,
   BULK_CREATE_NODE,
-  BULK_NODE,
+  BULK_CRUD_NODE,
   UPDATE_NODE,
   DELETE_NODE,
   CLEAR_NODE,
@@ -33,7 +35,14 @@ import {
   ALERT_WARNING,
   ALERT_INFO,
   ALERT_CLEAR,
-  ALERT_ERROR
+  ALERT_ERROR,
+  ADD_WINDOW_NODE,
+  UPDATE_WINDOW_NODE,
+  CLEAR_WINDOW_NODE,
+  SET_WINDOW_READ_MODE,
+  SET_WINDOW_EDIT_MODE,
+  MODE_ONLINE,
+  MODE_OFFLINE
 } from "../globals/_action_types";
 
 export const boot_start = () => {
@@ -46,6 +55,14 @@ export const boot_success = () => {
 
 export const boot_failure = err => {
   return { type: BOOT_FAILURE, err };
+};
+
+export const mode_online = () => {
+  return { type: MODE_ONLINE };
+};
+
+export const mode_offline = () => {
+  return { type: MODE_OFFLINE };
 };
 
 export const startBootLocalProcess = async dispatch => {
@@ -200,8 +217,23 @@ export const logout_request = () => {
   };
 };
 
-export const bulk_node = data => {
-  return { type: BULK_NODE, data };
+export const bulk_node_state_router = data => {
+  return dispatch => {
+    const state = store.getState();
+    dispatch(bulk_crud_node(data));
+    if (data.update.length === 1) {
+      if (
+        data.update[0].content &&
+        state.windowNode._id === data.update[0]._id
+      ) {
+        dispatch(update_window_node({ content: data.update[0].content }));
+      }
+    }
+  };
+};
+
+export const bulk_crud_node = data => {
+  return { type: BULK_CRUD_NODE, data };
 };
 
 export const bulk_create_nodes = nodes => {
@@ -222,4 +254,47 @@ export const delete_node = id => {
 
 export const clear_node = () => {
   return { type: CLEAR_NODE };
+};
+
+export const readThisNode = async id => {
+  return async dispatch => {
+    const node = await getLocalNodeById(id);
+    dispatch(add_window_node(id, node.content, node.conflicts, "read"));
+  };
+};
+
+export const editThisNode = async id => {
+  return async dispatch => {
+    const node = await getLocalNodeById(id);
+    dispatch(add_window_node(node._id, node.content, node.conflicts, "edit"));
+  };
+};
+
+export const add_window_node = (id, content, conflicts, mode) => {
+  return {
+    type: ADD_WINDOW_NODE,
+    _id: id,
+    content: content,
+    conflicts: conflicts,
+    mode: mode
+  };
+};
+
+export const update_window_node = update => {
+  return {
+    type: UPDATE_WINDOW_NODE,
+    content: update.content
+  };
+};
+
+export const clear_window_node = () => {
+  return { type: CLEAR_WINDOW_NODE };
+};
+
+export const set_window_read_mode = () => {
+  return { type: SET_WINDOW_READ_MODE };
+};
+
+export const set_window_edit_mode = () => {
+  return { type: SET_WINDOW_EDIT_MODE };
 };

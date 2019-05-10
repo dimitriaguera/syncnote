@@ -1,15 +1,21 @@
 import {
   CREATE_NODE,
   BULK_CREATE_NODE,
-  BULK_NODE,
+  BULK_CRUD_NODE,
   UPDATE_NODE,
   DELETE_NODE,
-  CLEAR_NODE
+  CLEAR_NODE,
+  ADD_WINDOW_NODE,
+  UPDATE_WINDOW_NODE,
+  CLEAR_WINDOW_NODE,
+  SET_WINDOW_READ_MODE,
+  SET_WINDOW_EDIT_MODE
 } from "../../globals/_action_types";
+import { bindActionCreators } from "redux";
 
 const initialState = {};
 
-export function nodes(state = initialState, action) {
+const treeNode = (state = initialState, action) => {
   let nState;
   switch (action.type) {
     case CREATE_NODE:
@@ -22,7 +28,7 @@ export function nodes(state = initialState, action) {
         nState[node._id] = node;
       });
       return nState;
-    case BULK_NODE:
+    case BULK_CRUD_NODE:
       nState = Object.assign({}, state);
       action.data.create.forEach(node => {
         nState[node._id] = node;
@@ -52,4 +58,41 @@ export function nodes(state = initialState, action) {
     default:
       return state;
   }
-}
+};
+
+const windowNode = (
+  state = { _id: null, content: null, conflicts: null, mode: "read" },
+  action
+) => {
+  switch (action.type) {
+    case ADD_WINDOW_NODE:
+      return {
+        ...state,
+        _id: action._id,
+        content: action.content,
+        conflicts: action.conflict,
+        mode: action.mode ? action.mode : state.mode
+      };
+    case UPDATE_WINDOW_NODE:
+      return {
+        ...state,
+        content: action.content
+      };
+    case CLEAR_WINDOW_NODE:
+      return {
+        ...state,
+        _id: null,
+        content: null,
+        conflicts: null,
+        mode: "read"
+      };
+    case SET_WINDOW_READ_MODE:
+      return { ...state, mode: "read" };
+    case SET_WINDOW_EDIT_MODE:
+      return { ...state, mode: "edit" };
+    default:
+      return state;
+  }
+};
+
+export default { treeNode, windowNode };

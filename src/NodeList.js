@@ -32,7 +32,6 @@ class NodeListNoConnect extends Component {
     const { nodes } = this.props;
 
     const tree = objectToTree(nodes);
-    console.log(tree);
     const rows = this.makeRows(tree);
 
     return (
@@ -49,7 +48,7 @@ class NodeListNoConnect extends Component {
 
 const mapStateToProps = state => {
   return {
-    nodes: state.nodes
+    nodes: state.treeNode
   };
 };
 

@@ -11,14 +11,14 @@ import {
 } from "../globals/_sync_status";
 
 // Create local node model.
-export const buildNode = (name, shared = [], parent = "", children = []) => {
+export const buildNode = (name, shared = [], parent = "", content = null) => {
   return {
     _id: uuidv1(),
     _tId: uuidv1(),
     owner: getLocalUser()._id,
     parent: parent,
-    children: children,
     name: name,
+    content: content,
     shared: shared,
     _sync_wait: SYNC_WAIT_CREA,
     _sync_status: SYNC_STATUS_PENDING
@@ -37,7 +37,7 @@ export const updateNode = (node, update = {}) => {
 
 // Format local node before sync transaction.
 export const prepareLocalNodeBeforeCreatePush = localNode => {
-  const { name, shared = [], parent = "", children = [] } = localNode;
+  const { name, shared = [], parent = "", content = null } = localNode;
   const tId = uuidv1();
   return Object.assign(localNode, {
     _id: uuidv1(),
@@ -47,18 +47,19 @@ export const prepareLocalNodeBeforeCreatePush = localNode => {
     _sync_pool: [tId],
     owner: getLocalUser()._id,
     parent: parent,
-    children: [],
+    content: content,
     name: name,
     shared: shared
   });
 };
 
 // Format local node before sync transaction.
-export const prepareLocalNodeBeforeUpdatePush = localNode => {
+export const prepareLocalNodeBeforeUpdatePush = (update, localNode) => {
   const tId = uuidv1();
-  return Object.assign(localNode, {
-    _id: localNode._id,
-    _tId: uuidv1(),
+  return Object.assign(update, {
+    _id: localNode._id, // Utile ???
+    _tId: tId,
+    _rev: localNode._rev,
     _sync_wait: SYNC_WAIT_UPT,
     _sync_status: SYNC_STATUS_PENDING,
     _sync_pool: [tId].concat(localNode._sync_pool || [])
