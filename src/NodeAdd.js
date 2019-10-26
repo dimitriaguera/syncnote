@@ -27,12 +27,14 @@ class NodeAdd extends Component {
   async handleSubmit(event) {
     const { name, shared } = this.state;
     let s = shared.split(",");
+    console.log('SHARED :', s);
     s = !s[0] ? [] : s;
     if (!name) return;
     //const node = buildNode(name, s);
     push({
       type: "add",
-      data: { name: name }
+      data: { name: name },
+      shared: s,
     });
     event.preventDefault();
   }
