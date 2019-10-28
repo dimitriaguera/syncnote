@@ -14,15 +14,17 @@ import {
   clearNodeToRemoteSync
 } from "../node-factory";
 import { SYNC_WAIT_OK, SYNC_STATUS_DONE } from "../../globals/_sync_status";
-import socket from "../../services/socket";
+import { remoteInterface } from "./sync.remote";
 
 // Socket "s.on()" events registration.
 // This is data entry point from remoteDB changes.
-socket.eventRegister("push_ok", pushOkHandler);
-socket.eventRegister("push_errors", pushErrorsHandler);
-socket.eventRegister("sync_ok", syncOkHandler);
-socket.eventRegister("sync_errors", syncErrorsHandler);
-socket.eventRegister("sync_change", syncChange);
+remoteInterface.eventRegister( socket => {
+  socket.eventRegister("push_ok", pushOkHandler);
+  socket.eventRegister("push_errors", pushErrorsHandler);
+  socket.eventRegister("sync_ok", syncOkHandler);
+  socket.eventRegister("sync_errors", syncErrorsHandler);
+  socket.eventRegister("sync_change", syncChange);
+});
 
 // Get data from remote DB and populate localDB.
 // This function is called during login phase.
@@ -45,7 +47,7 @@ export const syncLocalDbToRemote = async () => {
   // Create remote node formatted to send on remote DB.
   await bulkSync.start();
 
-  socket.emit("sync", bulkSync.getRemote(), _actions => {
+  remoteInterface.sync( bulkSync.getRemote(), _actions => {
     // remote send _actions to localy perform, and conflicts.
     console.log("resp after sync: ", _actions);
     // Make localy wht need to be made : CRUD/conflict management.
@@ -56,7 +58,7 @@ export const syncLocalDbToRemote = async () => {
     }
     //console.log(_syncLocalStatus);
     //@Todo : handle later response to manage remote db writing errors.
-  });
+  } );
 };
 
 // Push new data to remoteDB.
@@ -69,7 +71,6 @@ export const push = async _action => {
       "_id"
     );
 
-    console.log("Push remote data: ", toRemote);
     console.log("Push local data: ", toLocal);
 
     // Update local indexDBbefore emtting to remote.
@@ -81,15 +82,22 @@ export const push = async _action => {
     // If offline mode, abord.
     if( isOffline() ) return;
 
+    // Calling queue system to avoid network flooding,
+    // and avoid the specific case sending node push
+    // before getting last push node confirmation with last _rev.
+    // Before pushing, we need to have last _rev in our node.
+
+
     // Emit on push room.
-    socket.emit("push", toRemote, resp => {
-      console.log("resp after push: ", resp);
+    remoteInterface.push( toRemote, resp => {
+      //console.log("resp after push: ", resp);
       //@Todo : handle direct response to manage conflicts.
     });
   } catch (err) {
     console.log(err);
   }
 };
+
 
 // Prepare data before sending to remote via push socket room.
 // Need to be formatted for both local and remote DB.
@@ -124,7 +132,7 @@ async function prepareNodeToPush(_action, key) {
 
 // Handler listening socket blabla.
 async function pushOkHandler(data) {
-  console.log("from remote after push is OK: ", data);
+  //console.log("from remote after push is OK: ", data);
 }
 
 // Handler listening socket blabla.
@@ -136,11 +144,12 @@ async function pushErrorsHandler(data) {
 function syncErrorsHandler(data) {
   console.log("from sync_errors: ", data);
 }
+
 function syncOkHandler(data) {
   console.log("from sync_ok: ", data);
 }
-async function syncChange(data) {
 
+async function syncChange(data) {
   // @TODO TO REMOVE !!!
   // Simulate offline mode.
   // If offline mode, abord.

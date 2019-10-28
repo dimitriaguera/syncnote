@@ -19,7 +19,7 @@ export const isOffline = () => {
 }
 
 export const changeInAppState = changes => {
-  console.log("CHANGES BY DEXIE OBS: ", changes);
+  //console.log("CHANGES BY DEXIE OBS: ", changes);
   const data = buildBulkRequest(changes);
   console.log("DATA SEND TO STATE: ", data);
   onBulk(data);

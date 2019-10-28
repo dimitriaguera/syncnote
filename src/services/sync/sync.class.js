@@ -14,6 +14,7 @@ import {
 import {
   prepareSyncedLocalNodeToAdd,
   prepareSyncedLocalNodeToUpdate,
+  prepareSyncedLocalNodeToRefresh,
   prepareSyncedLocalNodeToRemove,
   prepareSyncedLocalNodeToOk,
   prepareSyncedLocalNodeToConflict,
@@ -31,6 +32,8 @@ import {
   SYNC_STATUS_PENDING,
   SYNC_STATUS_CONFLICT*/
 } from "../../globals/_sync_status";
+
+import { remoteInterface } from './sync.remote';
 
 class LocalSyncBulk {
   constructor() {
@@ -64,9 +67,9 @@ class LocalSyncBulk {
   }
 
   async run() {
-    console.log(chalk.yellow("LOCAL RUNNER : "));
-    console.log(this.queue);
-    console.log(chalk.yellow("------------------------------"));
+    //console.log(chalk.yellow("LOCAL RUNNER : "));
+    //console.log(this.queue);
+    //console.log(chalk.yellow("------------------------------"));
     const running = [];
     if (this.queue.add.length)
       running.push(bulkAddNodeToLocalDb(this.queue.add));
@@ -120,6 +123,7 @@ class LocalSync {
   constructor() {
     this.type = null;
     this.func = null;
+    this.callback = null;
   }
 
   async handleRemoteStream(streamData = {}) {
@@ -153,7 +157,7 @@ class LocalSync {
       default:
         break;
     }
-    console.log("local _action after stream: ", _action);
+    //console.log("local _action after stream: ", _action);
 
     if (!_action) {
       console.log("Let it be...");
@@ -187,11 +191,21 @@ class LocalSync {
     );
   }
 
+  refresh(node) {
+    this.callback = () => remoteInterface.nextPush(node._id, node._rev);
+    this.func = updateNodeToLocalDb.bind(
+      null,
+      node._id,
+      prepareSyncedLocalNodeToRefresh(node)
+    );
+  }
+
   remove(nid) {
     this.func = deleteNodeToLocalDb.bind(null, nid);
   }
 
   ok(node) {
+    this.callback = () => remoteInterface.nextPush( node._id, node._rev );
     this.func = updateNodeToLocalDb.bind(
       null,
       node._id,
@@ -210,7 +224,10 @@ class LocalSync {
     if (this.func) {
       try {
         const soWhat = await this.func();
-        console.log("LOCAL RUN REPORT: ", soWhat);
+        if( this.callback ) {
+          this.callback();
+        }
+        //console.log("LOCAL RUN REPORT: ", soWhat);
       } catch (err) {
         console.log("LOCAL RUNNER ERRORS: ", err);
       }
@@ -230,6 +247,11 @@ class Action {
   }
   update(data) {
     this.type = "update";
+    this.data = data;
+    return this;
+  }
+  refresh(data) {
+    this.type = "refresh";
     this.data = data;
     return this;
   }
@@ -257,50 +279,66 @@ class Action {
 }
 
 async function checkConflict(_id, node, type) {
-  const { _tId } = node;
+  const { _tId, _rev } = node;
   const _action = new Action();
 
   // If type conflict.
   if (type === "conflict") {
+    console.log('============= check-conflict : CONFLICT', _rev);
     _action.conflict(node);
     return _action;
   }
 
   // If no _id, can't do anything.
   if (!_id || !_tId) {
+    console.log('============= check-conflict : NO ID');
     throw new Error(`No _id or _tId for node ${JSON.stringify(node)}`);
   }
+
+  // Store last _rev to queue
+  remoteInterface.storeRev( _id, _rev );
 
   // Get local node.
   const localNode = await getLocalNodeById(_id);
 
   // If no local node, add it.
   if (!localNode) {
+    console.log('============= check-conflict : NO CONFLICT 1', _rev);
     _action.add(node);
     return _action;
   }
 
   // If node streamed from current client sync transaction, just say sync ok.
   if (isLastTransaction(_tId, localNode)) {
+    console.log('============= check-conflict : NO CONFLICT 2', _rev);
     _action.ok(
       Object.assign(localNode, {
         _rev: node._rev
       })
     );
+
+    // proceed next waiting push sync for this node
     return _action;
   }
 
-  // If node streamed from old client sync transaction, just say nothing.
+  // If node streamed from old client sync transaction
+  // Just update the local _rev id to match current remote state
   if (isOwnerOfThisTransaction(_tId, localNode)) {
-    return null;
+    console.log('============= check-conflict : NOT LAST TRANSACTION', _rev);
+    console.log('===================== old _rev', localNode._rev);
+    console.log('===================== new _rev', _rev);
+    _action.refresh({ _id, _rev });
+    return _action;
   }
 
   // If not same transaction but node not pending, no conflict, we can create or update.
   if (localNode._sync_wait === SYNC_WAIT_OK) {
+    console.log('============= check-conflict : NO CONFLICT 3', _rev);
     _action[type](Object.assign({}, localNode, node));
     return _action;
   }
 
+  console.log('============= check-conflict : CONFLICT....', _rev, node._tid, localNode);
   // Else, localNode change not saved, go conflict.
   _action.conflict({
     code: "LOCAL_NO_SAVE",

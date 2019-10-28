@@ -59,7 +59,7 @@ export const updateNodeToLocalDb = async (id, update) => {
 };
 
 export const deleteNodeToLocalDb = async id => {
-  console.log("DEXIE DELETE : ", id);
+  //console.log("DEXIE DELETE : ", id);
   return await _DB.nodes.delete(id);
 };
 

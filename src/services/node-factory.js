@@ -91,9 +91,16 @@ export const prepareSyncedLocalNodeToAdd = remoteNode => {
   });
 };
 
+// Refresh local node's _rev to match remote state
+export const prepareSyncedLocalNodeToRefresh = remoteNode => {
+  return {
+    _rev: remoteNode._rev
+  };
+}
+
 // Format local node after received from sync stream
 export const prepareSyncedLocalNodeToUpdate = remoteNode => {
-  console.log("REMOTE NODE");
+  //console.log("REMOTE NODE");
   return Object.assign({}, remoteNode, {
     _sync_status: SYNC_STATUS_DONE,
     _sync_wait: SYNC_WAIT_OK
@@ -123,7 +130,7 @@ export const prepareSyncedLocalNodeToOk = remoteNode => {
 
 // Format local node after received from sync stream
 export const prepareSyncedLocalNodeToConflict = conflictObject => {
-  console.log("CONFLICT OBJ: ", conflictObject);
+  //console.log("CONFLICT OBJ: ", conflictObject);
   return {
     _id: conflictObject.rNode._id,
     _sync_status: SYNC_STATUS_CONFLICT,
@@ -183,11 +190,31 @@ export const prepareNodeBeforeSync = (node, tId) => {
 
 //Transaction helpers.
 export const isLastTransaction = (_tId, node) => {
-  return _tId === node._tId;
+  // test if last transaction
+  const last = _tId === node._tId;
+
+  // If is last, clear _sync_pool array
+  if( last ) {
+    node._sync_pool.splice(0 , node._sync_pool.length);
+  }
+
+  // return bool
+  return last;
 };
 
 export const isOwnerOfThisTransaction = (_tId, node) => {
-  return node._sync_pool.indexOf(_tId) !== -1;
+  // get position
+  const index = node._sync_pool.indexOf(_tId);
+
+  // if element in array
+  if( index > -1 ) {
+    // remove _tid from array
+    node._sync_pool.splice( index, 1 );
+    console.log('******************** Transaction owner');
+    return true;
+  }
+  console.log('******************** No transaction owner', _tId, node._sync_pool);
+  return false;
 };
 
 export const getCleanTransaction = node => {

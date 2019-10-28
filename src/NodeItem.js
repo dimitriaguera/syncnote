@@ -35,8 +35,8 @@ class NoteItemNoConnect extends Component {
 
   handleTestRunner(){
 
-    const delay = 100;
-    const loops = 3;
+    const delay = 50;
+    const loops = 100;
     
     let count = 0;
 

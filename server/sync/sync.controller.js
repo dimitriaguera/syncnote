@@ -22,6 +22,11 @@ module.exports = {
   }
 };
 
+// Testing function
+async function stall(stallTime = 300) {
+  await new Promise(resolve => setTimeout(resolve, stallTime));
+}
+
 // Manage Sync client request.
 function syncHanlerBuilder(socket, roomOk, roomError) {
   return async (localNodes, send) => {
@@ -58,6 +63,11 @@ function syncHanlerBuilder(socket, roomOk, roomError) {
 function pushHandlerBuilder(socket, roomOk, roomError) {
   return async (localNode, send) => {
     try {
+
+      console.log(chalk.yellow("RECIEVE DATA : "));
+      console.log(localNode);
+      console.log(chalk.yellow("------------------------------"));
+
       // Get node's ID.
       const _nId = localNode._id;
 
@@ -75,6 +85,10 @@ function pushHandlerBuilder(socket, roomOk, roomError) {
           [_nId]: localNode
         }
       );
+
+      console.log(chalk.yellow("ACTION BUILD : "));
+      console.log(_actions);
+      console.log(chalk.yellow("------------------------------"));
 
       // Send immediate CRUD or CONFLICT actions to perform in local.
       send(_actions);
