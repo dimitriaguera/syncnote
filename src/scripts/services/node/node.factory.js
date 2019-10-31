@@ -206,7 +206,6 @@ export const isLastTransaction = (_tId, node) => {
 
   // clear _sync_pool array
   if( last ) {
-    console.log('************ delete tId', _tId);
     node._sync_pool.splice( node._sync_pool.indexOf(_tId), 1 );
   }
 
@@ -222,12 +221,9 @@ export const isOwnerOfThisTransaction = (_tId, node) => {
     if( index > -1 ) {
       // remove _tid from array
       node._sync_pool.splice( index, 1 );
-      console.log('************ delete tId', _tId);
-      console.log('******************** Transaction owner');
       return true;
     }
   }
-  console.log('******************** No transaction owner', _tId, node._sync_pool);
   return false;
 };
 

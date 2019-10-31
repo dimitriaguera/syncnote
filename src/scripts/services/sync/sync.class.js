@@ -284,7 +284,7 @@ async function checkConflict(_id, node, type) {
 
   // If type conflict.
   if (type === "conflict") {
-    console.log('============= check-conflict : CONFLICT', _rev);
+    console.log('============= check-conflict : CONFLICT');
     _action.conflict(node);
     return _action;
   }
@@ -303,14 +303,14 @@ async function checkConflict(_id, node, type) {
 
   // If no local node, add it.
   if (!localNode) {
-    console.log('============= check-conflict : NO CONFLICT 1', _rev);
+    console.log('============= check-conflict : NO CONFLICT 1');
     _action.add(node);
     return _action;
   }
 
   // If node streamed from current client sync transaction, just say sync ok.
   if (isLastTransaction(_tId, localNode)) {
-    console.log('============= check-conflict : NO CONFLICT 2', _rev);
+    console.log('============= check-conflict : NO CONFLICT 2');
     _action.ok(
       Object.assign(localNode, { _rev })
     );
@@ -322,21 +322,19 @@ async function checkConflict(_id, node, type) {
   // If node streamed from old client sync transaction
   // Just update the local _rev id to match current remote state
   if (isOwnerOfThisTransaction(_tId, localNode)) {
-    console.log('============= check-conflict : NOT LAST TRANSACTION', _rev);
-    console.log('===================== old _rev', localNode._rev);
-    console.log('===================== new _rev', _rev);
+    console.log('============= check-conflict : NOT LAST TRANSACTION');
     _action.refresh({ _id, _rev });
     return _action;
   }
 
   // If not same transaction but node not pending, no conflict, we can create or update.
   if (localNode._sync_wait === SYNC_WAIT_OK) {
-    console.log('============= check-conflict : NO CONFLICT 3', _rev);
+    console.log('============= check-conflict : NO CONFLICT 3');
     _action[type](Object.assign({}, localNode, node));
     return _action;
   }
 
-  console.log('============= check-conflict : CONFLICT....', _rev, node._tid, localNode);
+  console.log('============= check-conflict : CONFLICT....');
   // Else, localNode change not saved, go conflict.
   _action.conflict({
     code: "LOCAL_NO_SAVE",

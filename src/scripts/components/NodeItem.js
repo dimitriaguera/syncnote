@@ -24,8 +24,6 @@ class NoteItemNoConnect extends Component {
       type: "update",
       data: {
         _id: node._id,
-        // _rev: node._rev,
-        // _sync_pool: node._sync_pool,
         name: value
       }
     };
@@ -86,7 +84,7 @@ class NoteItemNoConnect extends Component {
     return (
       <div
         className={classes.join(" ")}
-        style={{ paddingLeft: `${level * 20}px` }}
+        style={{ paddingLeft: `${(level - 1) * 20}px` }}
       >
         <button className="label" onClick={this.handleSelect}>
           {node.name}

@@ -28,7 +28,6 @@ class RemoteQueue {
     // if node is already running on remote
     // store next action
     else {
-      console.log('+++++ add: add pool queue', node);
       this.pool[_id] = {
         node,
         callback
@@ -51,7 +50,6 @@ class RemoteQueue {
     } 
 
     // flag node is not yet running
-    console.log('+++++ next: close queue', _id);
     this.running[_id] = false;
     return false;
   }

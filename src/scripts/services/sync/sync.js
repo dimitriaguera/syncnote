@@ -33,8 +33,6 @@ queue.setOnRun( async _action => {
   // handle action and prepare local node
   // to be saved localy
   const { node, localDbAction } = await prepareNodeToLocalPush(_action);
-  console.log("Push local _action: ", JSON.parse(JSON.stringify(_action)));
-  console.log("Push local data: ", JSON.parse(JSON.stringify(node)));
 
   // save localy
   await localDbAction();
@@ -151,7 +149,6 @@ async function syncChange(data) {
   // If offline mode, abord.
   if( isOffline() ) return;
 
-  console.log("from sync_change: ", data);
   const sync = new LocalSync();
   await sync.handleRemoteStream(data);
 }
