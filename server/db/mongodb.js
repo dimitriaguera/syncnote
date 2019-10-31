@@ -16,7 +16,10 @@ async function initDatabase() {
 
   // Use connect method to connect to the Server
   const mongoConnect = promisify(MongoClient.connect);
-  const client = await mongoConnect(url, { useNewUrlParser: true });
+  const client = await mongoConnect(url, { 
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+   });
   _db = client.db(config.db.database);
   console.log("Connected to database server.");
 
