@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./services/store";
 import { Provider } from "react-redux";
-import Boot from "./Boot";
+import Boot from "./components/Boot";
 import "./services/socket";
 import "./services/auth/auth.event";
 

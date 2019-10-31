@@ -17,9 +17,7 @@ class DebouncedTextarea extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log(this.props.value);
     if (
-      //this.props.targetId !== prevProps.targetId &&
       prevProps.value !== this.props.value
     ) {
       this.setState({ value: this.props.value || "" });

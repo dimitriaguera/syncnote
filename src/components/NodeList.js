@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import NodeItem from "./NodeItem";
-import { objectToTree } from "./utils/tools";
+import { objectToTree } from "../utils/tools";
 
 class NodeListNoConnect extends Component {
   makeRowsRecursive(row, level) {

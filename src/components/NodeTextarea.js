@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { push } from "./services/sync/sync";
+import { push } from "../services/sync/sync";
 import DebouncedTextarea from "./DebouncedTextarea";
 
 class NodeTextareaNoConnect extends Component {
@@ -11,7 +11,6 @@ class NodeTextareaNoConnect extends Component {
 
   sendContentChange(value) {
     const { display } = this.props;
-    console.log( 'SENNNNNNNNNNNNNND', value );
     // Prevent sending data without node selected.
     if (!display._id) {
       return null;
@@ -35,7 +34,7 @@ class NodeTextareaNoConnect extends Component {
           value={display.content}
           targetId={display._id}
           onChange={this.sendContentChange}
-          time={500}
+          time={100}
         />
         }
         {display.conflicts && (

@@ -12,7 +12,6 @@ import {
   SET_WINDOW_EDIT_MODE,
   SET_WINDOW_EDIT_READ_MODE
 } from "../../globals/_action_types";
-import { bindActionCreators } from "redux";
 
 const initialState = {};
 

@@ -4,14 +4,14 @@ import Login from "./Login";
 import Main from "./Main";
 import Alert from "./Alert";
 import Header from "./Header";
-import "./App.css";
+import "../App.scss";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
         <Header />
-        <Alert />
+        {/* <Alert /> */}
         <main>
           <Route exact path="/" component={Main} />
           <Route path="/login" component={Login} />

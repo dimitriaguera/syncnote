@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout, mode_online, mode_offline } from "./redux/actions";
+import { logout, mode_online, mode_offline } from "../redux/actions";
 
 class HeaderNoConnect extends Component {
   render() {

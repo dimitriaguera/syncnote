@@ -16,7 +16,7 @@ class NodeReadNoConnect extends Component {
     }
 
     return (
-    <div className="node-read">
+    <div className="node-read markdown-body">
       <ReactMarkdown source={content} />
     </div>
     );

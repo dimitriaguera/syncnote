@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import { push } from "./services/sync/sync";
-//import { buildNode } from "./services/node-factory";
+import { connect } from "react-redux";
+import { login } from "../redux/actions";
 
-class NodeAdd extends Component {
+class LoginNoConnect extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      shared: ""
+      username: "",
+      password: ""
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -25,37 +25,35 @@ class NodeAdd extends Component {
   }
 
   async handleSubmit(event) {
-    const { name, shared } = this.state;
-    let s = shared.split(",");
-    s = !s[0] ? [] : s;
-    if (!name) return;
-    //const node = buildNode(name, s);
-    push({
-      type: "add",
-      data: { name: name, shared: s },
-    });
+    const { password, username } = this.state;
+    try {
+      this.props.loginHandler(password, username);
+    } catch (err) {
+      console.log("From Component: ", err);
+    }
+
     event.preventDefault();
   }
   render() {
     return (
-      <div className="add-node">
-        <h1>Add node</h1>
+      <div className="login">
+        <h1>Login</h1>
         <form onSubmit={this.handleSubmit}>
           <label>
-            Node name:
+            Username:
             <input
-              name="name"
+              name="username"
               type="text"
-              value={this.state.name}
+              value={this.state.username}
               onChange={this.handleInputChange}
             />
           </label>
           <label>
-            SharedId:
+            Password:
             <input
-              name="shared"
+              name="password"
               type="text"
-              value={this.state.shared}
+              value={this.state.password}
               onChange={this.handleInputChange}
             />
           </label>
@@ -66,4 +64,15 @@ class NodeAdd extends Component {
   }
 }
 
-export default NodeAdd;
+const mapDispatchToProps = dispatch => {
+  return {
+    loginHandler: (u, p) => dispatch(login(u, p))
+  };
+};
+
+const Login = connect(
+  null,
+  mapDispatchToProps
+)(LoginNoConnect);
+
+export default Login;

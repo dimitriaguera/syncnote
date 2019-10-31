@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { readThisNode } from "./redux/actions";
-import { push } from "./services/sync/sync";
+import { readThisNode } from "../redux/actions";
+import { push } from "../services/sync/sync";
 
 class NoteItemNoConnect extends Component {
   constructor(props) {

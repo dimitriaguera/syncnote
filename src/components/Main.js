@@ -7,9 +7,13 @@ class List extends Component {
   render() {
     return (
       <div className="main">
-        <NodeAdd />
-        <NodeList />
-        <NodeWindow />
+        <div className="main-navigation">
+          <NodeAdd />
+          <NodeList />
+        </div>
+        <div className="main-window">
+          <NodeWindow />
+        </div>
       </div>
     );
   }
