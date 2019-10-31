@@ -4,17 +4,18 @@ import {
   putNodeToLocalDb,
   getLocalNodeById,
   updateNodeToLocalDb
-} from "../local-db";
-import { getReferentNode, isOffline } from "../app-state";
+} from "../db/db.local";
+import { getReferentNode, isOffline } from "../state/app.state";
 import { get } from "../fetch";
 import {
   prepareLocalNodeBeforeCreatePush,
   prepareLocalNodeBeforeUpdatePush,
   prepareLocalNodeBeforeDeletePush,
   clearNodeToRemoteSync
-} from "../node-factory";
+} from "../node/node.factory";
 import { SYNC_WAIT_OK, SYNC_STATUS_DONE } from "../../globals/_sync_status";
 import { remoteInterface } from "./sync.remote";
+import { queue } from "./sync.queue";
 
 // Socket "s.on()" events registration.
 // This is data entry point from remoteDB changes.
@@ -24,6 +25,34 @@ remoteInterface.eventRegister( socket => {
   socket.eventRegister("sync_ok", syncOkHandler);
   socket.eventRegister("sync_errors", syncErrorsHandler);
   socket.eventRegister("sync_change", syncChange);
+});
+
+// register running function
+// execution during loop queue local push event handler
+queue.setOnRun( async _action => {
+  // handle action and prepare local node
+  // to be saved localy
+  const { node, localDbAction } = await prepareNodeToLocalPush(_action);
+  console.log("Push local _action: ", JSON.parse(JSON.stringify(_action)));
+  console.log("Push local data: ", JSON.parse(JSON.stringify(node)));
+
+  // save localy
+  await localDbAction();
+
+  // @TODO : TO REMOTE !!!
+  // Simulate offline mode.
+  // If offline mode, abord.
+  if( isOffline() ) return;
+
+  // Calling queue system to avoid network flooding,
+  // and avoid the specific case sending node push
+  // before getting last push node confirmation with last _rev.
+  // Before pushing, we need to have last _rev in our node.
+  // Emit on push room.
+  remoteInterface.push( node, resp => {
+    //console.log("resp after push: ", resp);
+    //@Todo : handle direct response to manage conflicts.
+  });
 });
 
 // Get data from remote DB and populate localDB.
@@ -64,45 +93,13 @@ export const syncLocalDbToRemote = async () => {
 // Push new data to remoteDB.
 export const push = async _action => {
   try {
-    // Prepare node to sync.
-
-    const { toRemote, toLocal, localDbAction } = await prepareNodeToPush(
-      _action,
-      "_id"
-    );
-
-    console.log("Push local data: ", toLocal);
-
-    // Update local indexDBbefore emtting to remote.
-    // This is to allow working offline.
-    await localDbAction();
-
-    // @TODO : TO REMOTE !!!
-    // Simulate offline mode.
-    // If offline mode, abord.
-    if( isOffline() ) return;
-
-    // Calling queue system to avoid network flooding,
-    // and avoid the specific case sending node push
-    // before getting last push node confirmation with last _rev.
-    // Before pushing, we need to have last _rev in our node.
-
-
-    // Emit on push room.
-    remoteInterface.push( toRemote, resp => {
-      //console.log("resp after push: ", resp);
-      //@Todo : handle direct response to manage conflicts.
-    });
+    queue.add( _action );
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };
 
-
-// Prepare data before sending to remote via push socket room.
-// Need to be formatted for both local and remote DB.
-// Need to be formatted according to action type: add, update or remove.
-async function prepareNodeToPush(_action, key) {
+async function prepareNodeToLocalPush(_action) {
   const { type, data } = _action;
   let localDbAction = null;
   let node = null;
@@ -124,19 +121,18 @@ async function prepareNodeToPush(_action, key) {
       break;
   }
   return {
-    toRemote: clearNodeToRemoteSync(node, node._tId),
-    toLocal: node,
+    node,
     localDbAction
   };
 }
 
 // Handler listening socket blabla.
-async function pushOkHandler(data) {
+function pushOkHandler(data) {
   //console.log("from remote after push is OK: ", data);
 }
 
 // Handler listening socket blabla.
-async function pushErrorsHandler(data) {
+function pushErrorsHandler(data) {
   console.log("from remote after push is ERROR: ", data);
 }
 

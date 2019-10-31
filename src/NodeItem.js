@@ -24,8 +24,8 @@ class NoteItemNoConnect extends Component {
       type: "update",
       data: {
         _id: node._id,
-        _rev: node._rev,
-        _sync_pool: node._sync_pool,
+        // _rev: node._rev,
+        // _sync_pool: node._sync_pool,
         name: value
       }
     };

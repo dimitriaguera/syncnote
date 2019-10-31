@@ -5,7 +5,7 @@ import { store } from "./services/store";
 import { Provider } from "react-redux";
 import Boot from "./Boot";
 import "./services/socket";
-import "./services/auth-event";
+import "./services/auth/auth.event";
 
 ReactDOM.render(
   <Provider store={store}>

@@ -9,7 +9,8 @@ import {
   UPDATE_WINDOW_NODE,
   CLEAR_WINDOW_NODE,
   SET_WINDOW_READ_MODE,
-  SET_WINDOW_EDIT_MODE
+  SET_WINDOW_EDIT_MODE,
+  SET_WINDOW_EDIT_READ_MODE
 } from "../../globals/_action_types";
 import { bindActionCreators } from "redux";
 
@@ -90,6 +91,8 @@ const windowNode = (
       return { ...state, mode: "read" };
     case SET_WINDOW_EDIT_MODE:
       return { ...state, mode: "edit" };
+    case SET_WINDOW_EDIT_READ_MODE:
+        return { ...state, mode: "edit-read" };
     default:
       return state;
   }

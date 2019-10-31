@@ -1,75 +1,95 @@
 
 import socket from "../socket";
-import { getLocalNodeById } from "../local-db";
+import { updateNodeToLocalDb } from "../db/db.local";
+import { prepareNodeToRemoteSync } from '../node/node.factory';
 
-class Queue {
+class RemoteQueue {
   constructor() {
     this.running = {};
     this.pool = {};
     this.lastRev = {};
   }
 
-  async add( data, callback ) {
+  add( node, callback ) {
     // get node id
-    const _id = data._id;
+    const { _id } = node;
 
     // if no waiting for remove node push ok
     // we can push immediatly
     if ( !this.running[_id] ) {
+
+      // flag running immadiatly
       this.running[_id] = true;
-      if( this.lastRev[_id] ) {
-        data._rev = this.lastRev[_id];
-      }
-      console.log('+++++ add: push to remote from addQueue: ', data);
-      socket.emit( 'push', data, callback );
+
+      // send to remote
+      this.send( _id, node, callback );
     }
 
-    // if node is running on remote
+    // if node is already running on remote
     // store next action
     else {
-      console.log('+++++ add: add pool queue', data);
+      console.log('+++++ add: add pool queue', node);
       this.pool[_id] = {
-        data,
+        node,
         callback
       }
     }
   }
 
-  storeRev(_id, _rev) {
-    this.lastRev[_id] = _rev;
-  }
-
-  next( _id, _rev = null ) {
-
+  next( _id ) {
     // if push waiting on pool for this node
     if( this.pool[_id] ) {
       // get datas
-      const { data, callback } = this.pool[_id];
+      const { node, callback } = this.pool[_id];
 
       // clear pool
       this.pool[_id] = null;
 
-      // add last _rev
-      if( _rev ) {
-        data._rev = _rev;
-      }
-
-      // emit a push to remote
-      console.log('+++++ next: push to remote from nextQueue: ', data);
-      socket.emit( 'push', data, callback );
+      // init var
+      this.send( _id, node, callback );
       return true;
     } 
 
     // flag node is not yet running
-    console.log('+++++ next: close queue', _id, _rev);
+    console.log('+++++ next: close queue', _id);
     this.running[_id] = false;
     return false;
+  }
+
+  refresh(_id, _rev) {
+    // if no rev stored, create _id key
+    if( !this.lastRev[_id] ) {
+      this.lastRev[_id] = {};
+    }
+    // store new _rev
+    this.lastRev[_id]._rev = _rev;
+  }
+
+  async send( _id, node, callback ) {
+    // declare versionning vars
+    let _rev = null;
+
+    // get values if stored
+    if( this.lastRev[_id] ) {
+      if( this.lastRev[_id]._rev ) {
+        _rev = this.lastRev[_id]._rev;
+      }
+    }
+
+    // prepare node to be send for sync to remote server
+    const nodeToRemote = prepareNodeToRemoteSync( node, _rev );
+
+    // update _sync_pool value on local db
+    await updateNodeToLocalDb(_id, { _sync_pool: [node._tId].concat(node._sync_pool || []) });
+
+    // send on push room socket channel
+    socket.emit( 'push', nodeToRemote, callback );
   }
 }
 
 class RemoteInterface {
   constructor() {
-    this.queue = new Queue();
+    this.queue = new RemoteQueue();
   }
 
   eventRegister( registration ) {
@@ -86,12 +106,12 @@ class RemoteInterface {
     this.queue.add( data, callback );
   }
 
-  nextPush( _id, _rev ) {
-    this.queue.next( _id, _rev );
+  nextPush( _id ) {
+    this.queue.next( _id );
   }
 
-  storeRev( _id, _rev ) {
-    this.queue.storeRev( _id, _rev );
+  refresh( _id, _rev ) {
+    this.queue.refresh( _id, _rev );
   }
 }
 

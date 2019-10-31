@@ -25,6 +25,7 @@ export const UPDATE_WINDOW_NODE = "app/node/UPDATE_WINDOW_NODE";
 export const CLEAR_WINDOW_NODE = "app/node/CLEAR_WINDOW_NODE";
 export const SET_WINDOW_READ_MODE = "app/node/SET_WINDOW_READ_NODE";
 export const SET_WINDOW_EDIT_MODE = "app/node/SET_WINDOW_EDIT_NODE";
+export const SET_WINDOW_EDIT_READ_MODE = "app/node/SET_WINDOW_EDIT_READ_MODE";
 
 export const MODE_ONLINE = "app/mode/MODE_ONLINE";
 export const MODE_OFFLINE = "app/mode/MODE_OFFLINE";

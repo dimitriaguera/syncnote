@@ -1,5 +1,5 @@
 import { store } from "../services/store";
-import { loginFetch } from "../services/auth-api";
+import { loginFetch } from "../services/auth/auth.api";
 import {
   populateLocalDbFromRemote,
   syncLocalDbToRemote
@@ -9,7 +9,7 @@ import {
   clearLocalDb,
   getAllLocalNodes,
   getLocalNodeById
-} from "../services/local-db";
+} from "../services/db/db.local";
 import socket from "../services/socket";
 import {
   setLocalToken,
@@ -41,6 +41,7 @@ import {
   CLEAR_WINDOW_NODE,
   SET_WINDOW_READ_MODE,
   SET_WINDOW_EDIT_MODE,
+  SET_WINDOW_EDIT_READ_MODE,
   MODE_ONLINE,
   MODE_OFFLINE
 } from "../globals/_action_types";
@@ -219,14 +220,35 @@ export const logout_request = () => {
 
 export const bulk_node_state_router = data => {
   return dispatch => {
+    // get state
     const state = store.getState();
+    // dispatch crud on nodeTree state
     dispatch(bulk_crud_node(data));
-    if (data.update.length === 1) {
-      if (
-        data.update[0].content &&
-        state.windowNode._id === data.update[0]._id
-      ) {
-        dispatch(update_window_node({ content: data.update[0].content }));
+    // check if a node is displayed
+    if( state.windowNode._id ) {
+      // check if the displayed node is touch by crud
+      // first check updated nodes
+      for( let i = 0, l = data.update.length; i < l; i++ ) {
+        const node = data.update[i];
+        // if node updated is already displayed
+        if( node._id === state.windowNode._id ) {
+          // if content change
+          if( node.content !== state.windowNode.content ) {
+            // dispatch changes on windowNode state
+            dispatch(update_window_node({ content: node.content }));
+            break;
+          }
+        }
+      }
+      // then check deleted nodes
+      for( let i = 0, l = data.delete.length; i < l; i++ ) {
+        const _id = data.delete[i];
+        // if node updated is already displayed
+        if( _id === state.windowNode._id ) {
+          // dispatch changes on windowNode state
+          dispatch(clear_window_node());
+          break;
+        }
       }
     }
   };
@@ -298,3 +320,7 @@ export const set_window_read_mode = () => {
 export const set_window_edit_mode = () => {
   return { type: SET_WINDOW_EDIT_MODE };
 };
+
+export const set_window_edit_read_mode = () => {
+  return { type: SET_WINDOW_EDIT_READ_MODE };
+}

@@ -9,7 +9,7 @@ import {
   bulkPutNodeToLocalDb,
   bulkUpdateNodeToLocalDb,
   bulkDeleteNodeToLocalDb
-} from "../local-db";
+} from "../db/db.local";
 
 import {
   prepareSyncedLocalNodeToAdd,
@@ -21,7 +21,7 @@ import {
   prepareNodesToSync,
   isLastTransaction,
   isOwnerOfThisTransaction
-} from "../node-factory";
+} from "../node/node.factory";
 
 import {
   SYNC_WAIT_OK
@@ -192,7 +192,7 @@ class LocalSync {
   }
 
   refresh(node) {
-    this.callback = () => remoteInterface.nextPush(node._id, node._rev);
+    this.callback = () => remoteInterface.nextPush(node._id);
     this.func = updateNodeToLocalDb.bind(
       null,
       node._id,
@@ -205,7 +205,7 @@ class LocalSync {
   }
 
   ok(node) {
-    this.callback = () => remoteInterface.nextPush( node._id, node._rev );
+    this.callback = () => remoteInterface.nextPush( node._id );
     this.func = updateNodeToLocalDb.bind(
       null,
       node._id,
@@ -296,7 +296,7 @@ async function checkConflict(_id, node, type) {
   }
 
   // Store last _rev to queue
-  remoteInterface.storeRev( _id, _rev );
+  remoteInterface.refresh( _id, _rev );
 
   // Get local node.
   const localNode = await getLocalNodeById(_id);
@@ -312,9 +312,7 @@ async function checkConflict(_id, node, type) {
   if (isLastTransaction(_tId, localNode)) {
     console.log('============= check-conflict : NO CONFLICT 2', _rev);
     _action.ok(
-      Object.assign(localNode, {
-        _rev: node._rev
-      })
+      Object.assign(localNode, { _rev })
     );
 
     // proceed next waiting push sync for this node

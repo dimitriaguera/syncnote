@@ -1,5 +1,5 @@
 import uuidv1 from "uuid/v1";
-import { getLocalUser } from "./session";
+import { getLocalUser } from "../session";
 import {
   SYNC_WAIT_OK,
   SYNC_WAIT_CREA,
@@ -8,7 +8,7 @@ import {
   SYNC_STATUS_DONE,
   SYNC_STATUS_PENDING,
   SYNC_STATUS_CONFLICT
-} from "../globals/_sync_status";
+} from "../../globals/_sync_status";
 
 // Create local node model.
 export const buildNode = (name, shared = [], parent = "", content = null) => {
@@ -56,30 +56,27 @@ export const prepareLocalNodeBeforeCreatePush = localNode => {
 // Format local node before sync transaction.
 export const prepareLocalNodeBeforeUpdatePush = (update, localNode) => {
   const tId = uuidv1();
+  delete update._sync_pool;
   return Object.assign(update, {
     _id: localNode._id, // Utile ???
     _tId: tId,
     _rev: localNode._rev,
     _sync_wait: SYNC_WAIT_UPT,
     _sync_status: SYNC_STATUS_PENDING,
-    _sync_pool: [tId].concat(localNode._sync_pool || [])
   });
 };
 
 // Format local node before sync transaction.
 export const prepareLocalNodeBeforeDeletePush = localNode => {
   const tId = uuidv1();
-  return Object.assign(
-    {},
-    {
-      _id: localNode._id,
-      _tId: tId,
-      _rev: localNode._rev,
-      _sync_wait: SYNC_WAIT_DEL,
-      _sync_status: SYNC_STATUS_PENDING,
-      _sync_pool: [tId].concat(localNode._sync_pool || [])
-    }
-  );
+  return Object.assign({}, {
+    _id: localNode._id,
+    _tId: tId,
+    _rev: localNode._rev,
+    _sync_wait: SYNC_WAIT_DEL,
+    _sync_status: SYNC_STATUS_PENDING,
+    _sync_pool: [tId].concat(localNode._sync_pool || [])
+  });
 };
 
 // Format local node after received from sync stream
@@ -170,6 +167,20 @@ export const prepareNodesToSync = (array, key) => {
   return { toRemote: toRemote, toLocal: toLocal };
 };
 
+export const prepareNodeToRemoteSync = (node, _rev) => {
+  // clone local node
+  const nodeToRemote = Object.assign({}, node);
+
+  // check last _rev to give to remote server
+  if( _rev ) {
+    nodeToRemote._rev = _rev;
+  }
+
+  // delete unusefull properties before sending node
+  delete nodeToRemote._sync_pool;
+  return nodeToRemote;
+}
+
 // Clear node properties that can't be send to remote db.
 export const clearNodeToRemoteSync = (node, tId) => {
   const toRemote = Object.assign({}, node);
@@ -193,9 +204,10 @@ export const isLastTransaction = (_tId, node) => {
   // test if last transaction
   const last = _tId === node._tId;
 
-  // If is last, clear _sync_pool array
+  // clear _sync_pool array
   if( last ) {
-    node._sync_pool.splice(0 , node._sync_pool.length);
+    console.log('************ delete tId', _tId);
+    node._sync_pool.splice( node._sync_pool.indexOf(_tId), 1 );
   }
 
   // return bool
@@ -203,15 +215,17 @@ export const isLastTransaction = (_tId, node) => {
 };
 
 export const isOwnerOfThisTransaction = (_tId, node) => {
-  // get position
-  const index = node._sync_pool.indexOf(_tId);
-
-  // if element in array
-  if( index > -1 ) {
-    // remove _tid from array
-    node._sync_pool.splice( index, 1 );
-    console.log('******************** Transaction owner');
-    return true;
+  if( node._sync_pool ) {
+    // get position
+    const index = node._sync_pool.indexOf(_tId);
+    // if element in array
+    if( index > -1 ) {
+      // remove _tid from array
+      node._sync_pool.splice( index, 1 );
+      console.log('************ delete tId', _tId);
+      console.log('******************** Transaction owner');
+      return true;
+    }
   }
   console.log('******************** No transaction owner', _tId, node._sync_pool);
   return false;

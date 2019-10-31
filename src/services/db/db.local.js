@@ -1,7 +1,7 @@
 import Dexie from "dexie";
 import "dexie-observable";
-import { changeInAppState } from "./app-state";
-import { formatUploadedNodes } from "./node-factory";
+import { changeInAppState } from "../state/app.state";
+import { formatUploadedNodes } from "../node/node.factory";
 
 let _DB = null;
 
@@ -59,7 +59,6 @@ export const updateNodeToLocalDb = async (id, update) => {
 };
 
 export const deleteNodeToLocalDb = async id => {
-  //console.log("DEXIE DELETE : ", id);
   return await _DB.nodes.delete(id);
 };
 
