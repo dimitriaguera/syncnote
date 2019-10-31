@@ -4,7 +4,7 @@ import Login from "./Login";
 import Main from "./Main";
 import Alert from "./Alert";
 import Header from "./Header";
-import "../App.scss";
+import "../../App.scss";
 
 class App extends Component {
   render() {

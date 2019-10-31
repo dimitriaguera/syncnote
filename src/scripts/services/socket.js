@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import { getLocalToken } from "./session";
-import config from "../config.public";
+import config from "../../config.public";
 
 // @todo change how this url is generated
 const url = config.socket.url;

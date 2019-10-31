@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../config.public";
+import config from "../../config.public";
 import { getLocalToken } from "./session";
 
 export const post = (url, data) => {
