@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { readThisNode } from "../redux/actions";
 import { push } from "../services/sync/sync";
+import Icon from "./Icon";
 
 class NoteItemNoConnect extends Component {
   constructor(props) {
@@ -112,6 +113,8 @@ class NoteItemNoConnect extends Component {
       <div className={classes.join(" ")}
            style={{ paddingLeft: `${(level - 1) * 20}px` }}
       > 
+        <Icon name="file-text"/>
+
         { edit ?
           <input type="text" value={value} ref={this.input} onChange={this.handleChange} onBlur={this.handleBlur} /> :
           <button className="label" onClick={this.handleSelect}>{node.name}</button> 
