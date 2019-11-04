@@ -186,7 +186,7 @@ async function compareForSync(remoteNodes, localNodes) {
               code: "EXIST",
               text: "Node already exist in remote DB",
               from: "remote",
-              nId: remoteNode._id
+              _id: remoteNode._id
             })
           );
           break;
@@ -223,7 +223,8 @@ async function compareForSync(remoteNodes, localNodes) {
               code: "EXIST",
               from: "remote",
               text: "Node already exist in remote DB",
-              rNode: remoteNode
+              rNode: remoteNode,
+              _id: remoteNode._id,
             })
           );
           break;
@@ -234,7 +235,8 @@ async function compareForSync(remoteNodes, localNodes) {
               code: "MERGE",
               from: "remote",
               text: "Node update conflict",
-              rNode: remoteNode
+              rNode: remoteNode,
+              _id: remoteNode._id,
             })
           );
           break;
@@ -245,7 +247,8 @@ async function compareForSync(remoteNodes, localNodes) {
               code: "DEL_UPDT",
               from: "remote",
               text: "Node to delete have been updated bedore",
-              rNode: remoteNode
+              rNode: remoteNode,
+              _id: remoteNode._id,
             })
           );
           break;

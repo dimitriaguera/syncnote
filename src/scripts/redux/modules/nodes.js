@@ -61,27 +61,27 @@ const treeNode = (state = initialState, action) => {
 };
 
 const windowNode = (
-  state = { _id: null, content: null, conflicts: null, mode: "read" },
+  state = { _id: null, content: null, name: null, conflicts: null, mode: "read" },
   action
 ) => {
   switch (action.type) {
     case ADD_WINDOW_NODE:
       return {
         ...state,
-        _id: action._id,
-        content: action.content,
-        conflicts: action.conflict,
+        _id: action.node._id,
+        name: action.node.name,
+        content: action.node.content,
+        conflicts: Object.assign({}, action.node._sync_conflict),
         mode: action.mode ? action.mode : state.mode
       };
     case UPDATE_WINDOW_NODE:
-      return {
-        ...state,
-        content: action.content
-      };
+      const nState = Object.assign({}, state,  action.update);
+      return nState;
     case CLEAR_WINDOW_NODE:
       return {
         ...state,
         _id: null,
+        name: null,
         content: null,
         conflicts: null,
         mode: "read"

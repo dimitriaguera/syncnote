@@ -53,6 +53,18 @@ export const prepareLocalNodeBeforeCreatePush = localNode => {
   });
 };
 
+export const prepareLocalNodeBeforeConflictPush = (update, localNode) => {
+  const tId = uuidv1();
+  delete update._sync_pool;
+  return Object.assign(update, {
+    _id: localNode._id,
+    _tId: tId,
+    _sync_wait: localNode._sync_wait,
+    _sync_status: localNode._sync_status,
+    _sync_conflict: localNode._sync_conflict
+  });
+};
+
 // Format local node before sync transaction.
 export const prepareLocalNodeBeforeUpdatePush = (update, localNode) => {
   const tId = uuidv1();
@@ -129,9 +141,10 @@ export const prepareSyncedLocalNodeToOk = remoteNode => {
 export const prepareSyncedLocalNodeToConflict = conflictObject => {
   //console.log("CONFLICT OBJ: ", conflictObject);
   return {
-    _id: conflictObject.rNode._id,
+    _id: conflictObject._id,
     _sync_status: SYNC_STATUS_CONFLICT,
-    _sync_wait: SYNC_WAIT_OK
+    _sync_wait: SYNC_WAIT_OK,
+    _sync_conflict : conflictObject
   };
 };
 

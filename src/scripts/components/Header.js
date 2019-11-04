@@ -7,8 +7,9 @@ class HeaderNoConnect extends Component {
   render() {
     const { user, loggedIn } = this.props.auth;
     return (
-      <header className="App-header">
+      <header className="header">
         <nav>
+          <span className="icon-activity"></span>
           <button onClick={this.props.setOnline}>Connect</button>
           <button onClick={this.props.setOffline}>Disconnect</button>
           <span>ONLINE STATUS: {this.props.mode.id}</span>

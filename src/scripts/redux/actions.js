@@ -233,9 +233,15 @@ export const bulk_node_state_router = data => {
         // if node updated is already displayed
         if( node._id === state.windowNode._id ) {
           // if content change
-          if( node.content !== state.windowNode.content ) {
+          if( node.content !== state.windowNode.content
+              || node.name !== state.windowNode.name ) {
             // dispatch changes on windowNode state
-            dispatch(update_window_node({ content: node.content }));
+            const dNode = {
+              name: node.name,
+              content: node.content,
+              conflicts: node._sync_conflict
+            }
+            dispatch(update_window_node(dNode));
             break;
           }
         }
@@ -278,34 +284,25 @@ export const clear_node = () => {
   return { type: CLEAR_NODE };
 };
 
-export const readThisNode = async id => {
+export const readThisNode = async (id, mode) => {
   return async dispatch => {
     const node = await getLocalNodeById(id);
-    dispatch(add_window_node(id, node.content, node.conflicts, "read"));
+    dispatch(add_window_node(node, mode));
   };
 };
 
-export const editThisNode = async id => {
-  return async dispatch => {
-    const node = await getLocalNodeById(id);
-    dispatch(add_window_node(node._id, node.content, node.conflicts, "edit"));
-  };
-};
-
-export const add_window_node = (id, content, conflicts, mode) => {
+export const add_window_node = (node, mode) => {
   return {
     type: ADD_WINDOW_NODE,
-    _id: id,
-    content: content,
-    conflicts: conflicts,
-    mode: mode
+    node,
+    mode
   };
 };
 
 export const update_window_node = update => {
   return {
     type: UPDATE_WINDOW_NODE,
-    content: update.content
+    update: update
   };
 };
 

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactMarkdown from "react-markdown";
 import { connect } from "react-redux";
 
-class NodeReadNoConnect extends Component {
+class ReadNoConnect extends Component {
   constructor(props) {
     super(props);
   }
@@ -29,9 +29,9 @@ const mapStateToProps = state => {
   };
 };
 
-const NodeRead = connect(
+const Read = connect(
   mapStateToProps,
   null
-)(NodeReadNoConnect);
+)(ReadNoConnect);
 
-export default NodeRead;
+export default Read;

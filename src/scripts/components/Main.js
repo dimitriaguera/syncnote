@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import NodeAdd from "./NodeAdd";
 import NodeList from "./NodeList";
-import NodeWindow from "./NodeWindow";
+import Window from "./Window";
 
 class List extends Component {
   render() {
@@ -12,7 +12,7 @@ class List extends Component {
           <NodeList />
         </div>
         <div className="main-window">
-          <NodeWindow />
+          <Window />
         </div>
       </div>
     );

@@ -15,7 +15,7 @@ export const initLocalDb = async user => {
   }
   _DB = new Dexie(getDbName(user._id));
   _DB.version(1).stores({
-    nodes: "&_id, _sync_wait, _sync_status, name, parent, owner, *shared",
+    nodes: "&_id, _sync_wait, _sync_status, _sync_conflict, name, parent, owner, *shared",
     conflicts: "&_id"
   });
   await _DB.open();

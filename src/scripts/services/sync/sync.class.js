@@ -80,12 +80,7 @@ class LocalSyncBulk {
     if (this.queue.ok.length)
       running.push(bulkUpdateNodeToLocalDb(this.queue.ok));
     if (this.queue.conflict.length) {
-      // running.push(bulkPutNodeToLocalDb(this.queue.conflict));
-      const logAllConflicts = new Promise((res, rej) => {
-        this.queue.conflict.forEach(x => console.warn("conflictObj : ", x));
-        res();
-      });
-      running.push(logAllConflicts);
+      running.push(bulkUpdateNodeToLocalDb(this.queue.conflict));
     }
     try {
       await Promise.all(running);
@@ -128,6 +123,7 @@ class LocalSync {
 
   async handleRemoteStream(streamData = {}) {
     let _action = null;
+
     switch (streamData.operationType) {
       case "insert":
         _action = await checkConflict(
@@ -136,6 +132,7 @@ class LocalSync {
           "add"
         );
         break;
+
       case "update":
         _action = await checkConflict(
           streamData.documentKey._id,
@@ -143,6 +140,7 @@ class LocalSync {
           "update"
         );
         break;
+
       case "replace":
         _action = await checkConflict(
           streamData.documentKey._id,
@@ -150,14 +148,15 @@ class LocalSync {
           "update"
         );
         break;
+
       case "delete":
         _action = new Action();
         _action.remove(streamData.documentKey._id);
         break;
+
       default:
         break;
     }
-    //console.log("local _action after stream: ", _action);
 
     if (!_action) {
       console.log("Let it be...");
@@ -214,8 +213,10 @@ class LocalSync {
   }
 
   conflict(conflictObject) {
-    this.func = putNodeToLocalDb.bind(
+    console.log('before db update conflict object', conflictObject);
+    this.func = updateNodeToLocalDb.bind(
       null,
+      conflictObject._id,
       prepareSyncedLocalNodeToConflict(conflictObject)
     );
   }
@@ -305,6 +306,16 @@ async function checkConflict(_id, node, type) {
   if (!localNode) {
     console.log('============= check-conflict : NO CONFLICT 1');
     _action.add(node);
+    return _action;
+  }
+
+  // Handle local conflict and prevent local overiding
+  // just update rNode in conflict object
+  if ( localNode._sync_conflict ) {
+    console.log('============= check-conflict : LOCAL CONFLICT');
+    _action.conflict(
+      Object.assign( localNode._sync_conflict, { rNode: node } )
+    );
     return _action;
   }
 

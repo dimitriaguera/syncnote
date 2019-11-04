@@ -11,7 +11,8 @@ import {
   prepareLocalNodeBeforeCreatePush,
   prepareLocalNodeBeforeUpdatePush,
   prepareLocalNodeBeforeDeletePush,
-  clearNodeToRemoteSync
+  prepareLocalNodeBeforeConflictPush,
+  prepareSyncedLocalNodeToConflict,
 } from "../node/node.factory";
 import { SYNC_WAIT_OK, SYNC_STATUS_DONE } from "../../globals/_sync_status";
 import { remoteInterface } from "./sync.remote";
@@ -32,10 +33,13 @@ remoteInterface.eventRegister( socket => {
 queue.setOnRun( async _action => {
   // handle action and prepare local node
   // to be saved localy
-  const { node, localDbAction } = await prepareNodeToLocalPush(_action);
+  const { node, localDbAction, conflictFlag } = await prepareNodeToLocalPush(_action);
 
   // save localy
   await localDbAction();
+
+  // If conflict, no send to remote
+  if( conflictFlag ) return;
 
   // @TODO : TO REMOTE !!!
   // Simulate offline mode.
@@ -48,8 +52,9 @@ queue.setOnRun( async _action => {
   // Before pushing, we need to have last _rev in our node.
   // Emit on push room.
   remoteInterface.push( node, resp => {
-    //console.log("resp after push: ", resp);
+    console.log("resp after push: ", resp);
     //@Todo : handle direct response to manage conflicts.
+    handleRemoteResponse( resp );
   });
 });
 
@@ -101,6 +106,8 @@ async function prepareNodeToLocalPush(_action) {
   const { type, data } = _action;
   let localDbAction = null;
   let node = null;
+  let conflictFlag = false;
+
   switch (type) {
     case "add":
       node = prepareLocalNodeBeforeCreatePush(data);
@@ -108,10 +115,17 @@ async function prepareNodeToLocalPush(_action) {
       break;
     case "update":
       const localNode = await getLocalNodeById(_action.data._id);
-      node = prepareLocalNodeBeforeUpdatePush(data, localNode);
+      console.log('local update node', localNode);
+      if( localNode._sync_conflict ) {
+        conflictFlag = true;
+        node = prepareLocalNodeBeforeConflictPush(data, localNode);
+      } else {
+        node = prepareLocalNodeBeforeUpdatePush(data, localNode);
+      }
       localDbAction = updateNodeToLocalDb.bind(null, node._id, node);
       break;
     case "remove":
+      // @TODO Gerer les conflicts !!!
       node = prepareLocalNodeBeforeDeletePush(data);
       localDbAction = updateNodeToLocalDb.bind(null, node._id, node);
       break;
@@ -120,7 +134,8 @@ async function prepareNodeToLocalPush(_action) {
   }
   return {
     node,
-    localDbAction
+    localDbAction,
+    conflictFlag
   };
 }
 
@@ -151,4 +166,21 @@ async function syncChange(data) {
 
   const sync = new LocalSync();
   await sync.handleRemoteStream(data);
+}
+
+function handleRemoteResponse( _actions ) {
+  if( _actions ) {
+    _actions.forEach( action => {
+      switch( action.type ) {
+        case 'conflict':
+          const node = prepareSyncedLocalNodeToConflict( action.data );
+          console.log( 'CONFLICT PREPARED NODE', node );
+          updateNodeToLocalDb(node._id, node);
+          break;
+
+        default:
+          break;
+      }
+    });
+  }
 }

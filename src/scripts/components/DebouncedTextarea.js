@@ -11,31 +11,26 @@ class DebouncedTextarea extends Component {
   }
 
   componentDidMount() {
-    const { onChange, value, time = 500 } = this.props;
+    const { onChange, time = 500 } = this.props;
     this.send = debounce(onChange, time);
-    this.setState({ value: value || "" });
+    this.setState({ value: this.props.value || '' });
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.value !== this.props.value
-    ) {
-      this.setState({ value: this.props.value || "" });
+  componentDidUpdate( prevProps ) {
+    if( prevProps._id !== this.props._id || prevProps.value !== this.props.value ){
+      this.setState({ value: this.props.value || '' });
     }
   }
 
   handleInputChange(event) {
-    const target = event.target;
-    const value = target.value;
-
-    this.setState({ value: value }, () => {
-      this.send(value);
-    });
+    const value = event.target.value;
+    this.send(value);
+    this.setState({ value });
   }
 
   render() {
     return (
-      <textarea value={this.state.value} onChange={this.handleInputChange} />
+      <textarea value={this.state.value} onChange={this.handleInputChange}></textarea>
     );
   }
 }
