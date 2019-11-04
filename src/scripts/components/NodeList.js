@@ -36,8 +36,6 @@ class NodeListNoConnect extends Component {
 
     return (
       <div className="list">
-        <h1>List</h1>
-        <h2>{rows.length} nodes count</h2>
         {rows.map(node => (
           <NodeItem key={node._id} node={node} level={node.level} />
         ))}

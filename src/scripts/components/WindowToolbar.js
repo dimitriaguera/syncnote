@@ -4,7 +4,7 @@ import WindowToolbarMode from './WindowToolbarMode';
 
 const WindowToolbar = ({ name }) => {
   return (
-    <div className="window-toolbar">
+    <div className="toolbar window-toolbar">
       <WindowToolbarTitle />
       <WindowToolbarMode />
     </div>

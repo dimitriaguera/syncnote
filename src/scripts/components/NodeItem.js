@@ -111,13 +111,11 @@ class NoteItemNoConnect extends Component {
 
     return (
       <div className={classes.join(" ")}
-           style={{ paddingLeft: `${(level - 1) * 20}px` }}
-      > 
-        <Icon name="file-text"/>
-
+           style={{ paddingLeft: `${(level - 1) * 10}px` }}
+      >
         { edit ?
           <input type="text" value={value} ref={this.input} onChange={this.handleChange} onBlur={this.handleBlur} /> :
-          <button className="label" onClick={this.handleSelect}>{node.name}</button> 
+          <button className="name" onClick={this.handleSelect}><Icon name="file-text"/>{node.name}</button> 
         }
         <input type="button" value="Edit" onClick={this.handleToggleMode} />
         <input type="button" value="+" onClick={this.handleAdd} />

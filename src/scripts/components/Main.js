@@ -8,7 +8,9 @@ class List extends Component {
     return (
       <div className="main">
         <div className="main-navigation">
-          <NodeAdd />
+          <div className="toolbar navigation-header">
+            <NodeAdd />
+          </div>
           <NodeList />
         </div>
         <div className="main-window">
