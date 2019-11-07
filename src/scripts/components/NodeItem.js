@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { readThisNode } from "../redux/actions";
 import { push } from "../services/sync/sync";
+import NodeItemMenu from "./NodeItemMenu";
+import IconStatus from "./IconStatus";
 import Icon from "./Icon";
 
 class NoteItemNoConnect extends Component {
@@ -44,7 +46,7 @@ class NoteItemNoConnect extends Component {
     const node = this.props.node;
     const value = this.state.value;
 
-    this.setState({ edit: false });
+    //this.setState({ edit: false });
 
     if (value && value !== node.name) {
       const _action = {
@@ -107,20 +109,25 @@ class NoteItemNoConnect extends Component {
     const { node, level } = this.props;
     const { edit, value } = this.state;
 
-    const classes = ["node-item", `node-status-${node._sync_status}`];
+    const classes = [`node-status-${node._sync_status}`];
 
     return (
-      <div className={classes.join(" ")}
-           style={{ paddingLeft: `${(level - 1) * 10}px` }}
-      >
-        { edit ?
-          <input type="text" value={value} ref={this.input} onChange={this.handleChange} onBlur={this.handleBlur} /> :
-          <button className="name" onClick={this.handleSelect}><Icon name="file-text"/>{node.name}</button> 
-        }
-        <input type="button" value="Edit" onClick={this.handleToggleMode} />
-        <input type="button" value="+" onClick={this.handleAdd} />
-        <input type="button" value="-" onClick={this.handleRemove} />
-        {/* <input type="button" value="Test" onClick={this.handleTestRunner} /> */}
+      <div className="node-item">
+        <div className={classes.join(" ")}
+            style={{ paddingLeft: `${(level - 1) * 10}px` }} >
+            <div className="node-item-inner">
+            { edit ?
+              <input type="text" value={value} ref={this.input} onChange={this.handleChange} onBlur={this.handleBlur} /> :
+              <button className="name" onClick={this.handleSelect}><Icon name="file-text"/>{node.name}</button> 
+            }
+            <NodeItemMenu onClickEdit={this.handleToggleMode} 
+                          onClickAdd={this.handleAdd}
+                          onClickRemove={this.handleRemove} />
+
+            <IconStatus status={node._sync_status} />
+            {/* <input type="button" value="Test" onClick={this.handleTestRunner} /> */}
+            </div>
+        </div>
       </div>
     );
   }

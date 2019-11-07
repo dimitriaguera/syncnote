@@ -1,5 +1,7 @@
 import io from "socket.io-client";
 import { getLocalToken } from "./session";
+import { store } from "./store";
+import { msg_warning } from "../redux/actions";
 import config from "../../config.public";
 
 // @todo change how this url is generated
@@ -72,6 +74,7 @@ function errorSocketEvents(socket) {
 
   // Catch error send by server.
   socket.on("error", function(err) {
+    store.dispatch(msg_warning( 'You are not connected with server. You can try to re-authenticate.' ));
     console.log("Server socket sent an error", err);
   });
 

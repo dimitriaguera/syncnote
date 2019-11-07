@@ -1,0 +1,11 @@
+.alert {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  background-color: #fff;
+  padding: .5rem 2rem;
+}

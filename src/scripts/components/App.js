@@ -11,11 +11,11 @@ class App extends Component {
     return (
       <div className="App">
         <Header />
-        {/* <Alert /> */}
         <main>
           <Route exact path="/" component={Main} />
           <Route path="/login" component={Login} />
         </main>
+        <Alert />
       </div>
     );
   }

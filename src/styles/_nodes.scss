@@ -1,7 +1,18 @@
 .node-item {
+  position: relative;
+  padding: 5px 5px 5px 5px;
+
+  .node-item-inner {
+    position: relative;
+  }
+
   .name {
     background: none;
     border: none;
+
+    i {
+      margin-right: 5px;
+    }
   }
 
   &:hover {
@@ -9,17 +20,52 @@
   }
 }
 
+.node-item-menu {
+  display: inline-block;
+  position: relative;
+  z-index: 2;
 
-.node-status-0 .label {
-  //color: white;
-  //background-color: green;
-}
-.node-status-1 .label {
-  //color: white;
-  //background-color: blue;
+  .nim-toggle {
+    background: rgba(0, 0, 0, 0);
+    border: none;
+  }
+
+  .node-item-menu-box {
+    position: absolute;
+    top: 20px;
+    background: red;
+    padding: 5px;
+    z-index: 2;
+  }
 }
 
-.node-status-2 .label {
-  //color: white;
-  //background-color: red;
+.component-icon-status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: $status-icon-size;
+}
+
+
+.node-status-0 {
+  .component-icon-status {
+    color: $color-status-ok;
+  }
+}
+.node-status-1 {
+  .component-icon-status {
+    color: $color-status-waiting;
+  }
+}
+
+.node-status-2 {
+  .component-icon-status {
+    color: $color-status-conflict;
+  }
+}
+
+.node-status-3 {
+  .component-icon-status {
+    color: $color-status-error;
+  }
 }
