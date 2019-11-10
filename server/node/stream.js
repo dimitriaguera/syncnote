@@ -1,7 +1,6 @@
 const mongodb = require('../db/mongodb');
 
-ok = '2345';
-ok2 = 23;
+const ok = '2345';
 
 module.exports = {
   _nodeStream: (pipe = []) => {
