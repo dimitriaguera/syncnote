@@ -1,3 +1,5 @@
+/* stylelint-disable */
+
 @font-face {
   font-family: 'syncnote';
   src: url('../assets/icons/syncnote.eot?uggc69');
@@ -26,7 +28,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 .icon-activity:before {
   content: '\e900';
 }
