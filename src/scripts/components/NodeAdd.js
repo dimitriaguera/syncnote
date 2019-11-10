@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { push } from "../services/sync/sync";
+import React, { Component } from 'react';
+import { push } from '../services/sync/sync';
 
 class NodeAdd extends Component {
   constructor(props) {
@@ -14,8 +14,8 @@ class NodeAdd extends Component {
   onClick(event) {
     event.preventDefault();
     push({
-      type: "add",
-      data: { name: `Note ${this.state.index}` },
+      type: 'add',
+      data: { name: `Note ${this.state.index}` }
     });
     this.setState({ index: this.state.index + 1 });
   }

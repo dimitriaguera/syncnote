@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import debounce from "lodash/debounce";
+import React, { Component } from 'react';
+import debounce from 'lodash/debounce';
 
 class DebouncedTextarea extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: ""
+      value: ''
     };
     this.handleInputChange = this.handleInputChange.bind(this);
   }
@@ -16,8 +16,11 @@ class DebouncedTextarea extends Component {
     this.setState({ value: this.props.value || '' });
   }
 
-  componentDidUpdate( prevProps ) {
-    if( prevProps._id !== this.props._id || prevProps.value !== this.props.value ){
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps._id !== this.props._id ||
+      prevProps.value !== this.props.value
+    ) {
       this.setState({ value: this.props.value || '' });
     }
   }
@@ -30,7 +33,10 @@ class DebouncedTextarea extends Component {
 
   render() {
     return (
-      <textarea value={this.state.value} onChange={this.handleInputChange}></textarea>
+      <textarea
+        value={this.state.value}
+        onChange={this.handleInputChange}
+      ></textarea>
     );
   }
 }

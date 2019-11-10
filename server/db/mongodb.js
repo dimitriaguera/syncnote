@@ -1,6 +1,6 @@
-const MongoClient = require("mongodb").MongoClient;
-const config = require("../../config.server");
-const { promisify } = require("util");
+const MongoClient = require('mongodb').MongoClient;
+const config = require('../../config.server');
+const { promisify } = require('util');
 
 let _db;
 
@@ -16,12 +16,12 @@ async function initDatabase() {
 
   // Use connect method to connect to the Server
   const mongoConnect = promisify(MongoClient.connect);
-  const client = await mongoConnect(url, { 
+  const client = await mongoConnect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-   });
+  });
   _db = client.db(config.db.database);
-  console.log("Connected to database server.");
+  console.log('Connected to database server.');
 
   return _db;
 }

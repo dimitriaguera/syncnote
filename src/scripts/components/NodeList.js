@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import NodeItem from "./NodeItem";
-import { objectToTree } from "../utils/tools";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import NodeItem from './NodeItem';
+import { objectToTree } from '../utils/tools';
 
 class NodeListNoConnect extends Component {
   makeRowsRecursive(row, level) {
@@ -28,7 +28,7 @@ class NodeListNoConnect extends Component {
   }
 
   render() {
-    console.log("RENDER");
+    console.log('RENDER');
     const { nodes } = this.props;
 
     const tree = objectToTree(nodes);

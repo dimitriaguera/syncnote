@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { logout, mode_online, mode_offline } from "../redux/actions";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { logout, mode_online, mode_offline } from '../redux/actions';
 
 class HeaderNoConnect extends Component {
   render() {
@@ -45,9 +45,6 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const Header = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HeaderNoConnect);
+const Header = connect(mapStateToProps, mapDispatchToProps)(HeaderNoConnect);
 
 export default Header;

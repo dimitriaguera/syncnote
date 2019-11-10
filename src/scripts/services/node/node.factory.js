@@ -1,5 +1,5 @@
-import uuidv1 from "uuid/v1";
-import { getLocalUser } from "../session";
+import uuidv1 from 'uuid/v1';
+import { getLocalUser } from '../session';
 import {
   SYNC_WAIT_OK,
   SYNC_WAIT_CREA,
@@ -8,10 +8,10 @@ import {
   SYNC_STATUS_DONE,
   SYNC_STATUS_PENDING,
   SYNC_STATUS_CONFLICT
-} from "../../globals/_sync_status";
+} from '../../globals/_sync_status';
 
 // Create local node model.
-export const buildNode = (name, shared = [], parent = "", content = null) => {
+export const buildNode = (name, shared = [], parent = '', content = null) => {
   return {
     _id: uuidv1(),
     _tId: uuidv1(),
@@ -37,7 +37,7 @@ export const updateNode = (node, update = {}) => {
 
 // Format local node before sync transaction.
 export const prepareLocalNodeBeforeCreatePush = localNode => {
-  const { name, shared = [], parent = "", content = null } = localNode;
+  const { name, shared = [], parent = '', content = null } = localNode;
   const tId = uuidv1();
   return Object.assign(localNode, {
     _id: uuidv1(),
@@ -74,21 +74,24 @@ export const prepareLocalNodeBeforeUpdatePush = (update, localNode) => {
     _tId: tId,
     _rev: localNode._rev,
     _sync_wait: SYNC_WAIT_UPT,
-    _sync_status: SYNC_STATUS_PENDING,
+    _sync_status: SYNC_STATUS_PENDING
   });
 };
 
 // Format local node before sync transaction.
 export const prepareLocalNodeBeforeDeletePush = localNode => {
   const tId = uuidv1();
-  return Object.assign({}, {
-    _id: localNode._id,
-    _tId: tId,
-    _rev: localNode._rev,
-    _sync_wait: SYNC_WAIT_DEL,
-    _sync_status: SYNC_STATUS_PENDING,
-    _sync_pool: [tId].concat(localNode._sync_pool || [])
-  });
+  return Object.assign(
+    {},
+    {
+      _id: localNode._id,
+      _tId: tId,
+      _rev: localNode._rev,
+      _sync_wait: SYNC_WAIT_DEL,
+      _sync_status: SYNC_STATUS_PENDING,
+      _sync_pool: [tId].concat(localNode._sync_pool || [])
+    }
+  );
 };
 
 // Format local node after received from sync stream
@@ -105,7 +108,7 @@ export const prepareSyncedLocalNodeToRefresh = remoteNode => {
   return {
     _rev: remoteNode._rev
   };
-}
+};
 
 // Format local node after received from sync stream
 export const prepareSyncedLocalNodeToUpdate = remoteNode => {
@@ -118,7 +121,7 @@ export const prepareSyncedLocalNodeToUpdate = remoteNode => {
 
 // Format local node after received from sync stream
 export const prepareSyncedLocalNodeToRemove = remoteNode => {
-  return typeof remoteNode === "string" ? remoteNode : remoteNode._id;
+  return typeof remoteNode === 'string' ? remoteNode : remoteNode._id;
 };
 
 // Format local node after received from sync stream
@@ -144,7 +147,7 @@ export const prepareSyncedLocalNodeToConflict = conflictObject => {
     _id: conflictObject._id,
     _sync_status: SYNC_STATUS_CONFLICT,
     _sync_wait: SYNC_WAIT_OK,
-    _sync_conflict : conflictObject
+    _sync_conflict: conflictObject
   };
 };
 
@@ -185,14 +188,14 @@ export const prepareNodeToRemoteSync = (node, _rev) => {
   const nodeToRemote = Object.assign({}, node);
 
   // check last _rev to give to remote server
-  if( _rev ) {
+  if (_rev) {
     nodeToRemote._rev = _rev;
   }
 
   // delete unusefull properties before sending node
   delete nodeToRemote._sync_pool;
   return nodeToRemote;
-}
+};
 
 // Clear node properties that can't be send to remote db.
 export const clearNodeToRemoteSync = (node, tId) => {
@@ -218,8 +221,8 @@ export const isLastTransaction = (_tId, node) => {
   const last = _tId === node._tId;
 
   // clear _sync_pool array
-  if( last ) {
-    node._sync_pool.splice( node._sync_pool.indexOf(_tId), 1 );
+  if (last) {
+    node._sync_pool.splice(node._sync_pool.indexOf(_tId), 1);
   }
 
   // return bool
@@ -227,13 +230,13 @@ export const isLastTransaction = (_tId, node) => {
 };
 
 export const isOwnerOfThisTransaction = (_tId, node) => {
-  if( node._sync_pool ) {
+  if (node._sync_pool) {
     // get position
     const index = node._sync_pool.indexOf(_tId);
     // if element in array
-    if( index > -1 ) {
+    if (index > -1) {
       // remove _tid from array
-      node._sync_pool.splice( index, 1 );
+      node._sync_pool.splice(index, 1);
       return true;
     }
   }

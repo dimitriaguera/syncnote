@@ -1,26 +1,26 @@
-import { store } from "../store";
-import { MODE_OFFLINE_ID } from "../../globals/_sync_status";
+import { store } from '../store';
+import { MODE_OFFLINE_ID } from '../../globals/_sync_status';
 import {
   //create_node,
   bulk_crud_node,
   bulk_node_state_router
   //update_node,
   //delete_node
-} from "../../redux/actions";
+} from '../../redux/actions';
 
 // Get App mode ID (offline, online, etc)
 export const getAppMode = () => {
   const state = store.getState();
   return state.mode.id;
-}
+};
 
 export const isOffline = () => {
   return getAppMode() === MODE_OFFLINE_ID;
-}
+};
 
 export const changeInAppState = changes => {
   const data = buildBulkRequest(changes);
-  console.log("DATA SEND TO STATE: ", data);
+  console.log('DATA SEND TO STATE: ', data);
   onBulk(data);
 };
 
@@ -34,13 +34,12 @@ function onBulk(data) {
 }
 
 function buildBulkRequest(changes) {
-
   const bulk = {
     create: [],
     update: [],
     delete: []
   };
-  
+
   changes.forEach(function(change, partial) {
     switch (change.type) {
       case 1:

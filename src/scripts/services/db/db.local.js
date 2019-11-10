@@ -1,7 +1,7 @@
-import Dexie from "dexie";
-import "dexie-observable";
-import { changeInAppState } from "../state/app.state";
-import { formatUploadedNodes } from "../node/node.factory";
+import Dexie from 'dexie';
+import 'dexie-observable';
+import { changeInAppState } from '../state/app.state';
+import { formatUploadedNodes } from '../node/node.factory';
 
 let _DB = null;
 
@@ -15,11 +15,12 @@ export const initLocalDb = async user => {
   }
   _DB = new Dexie(getDbName(user._id));
   _DB.version(1).stores({
-    nodes: "&_id, _sync_wait, _sync_status, _sync_conflict, name, parent, owner, *shared",
-    conflicts: "&_id"
+    nodes:
+      '&_id, _sync_wait, _sync_status, _sync_conflict, name, parent, owner, *shared',
+    conflicts: '&_id'
   });
   await _DB.open();
-  _DB.on("changes", changeInAppState);
+  _DB.on('changes', changeInAppState);
 };
 
 export const getAllLocalNodes = async () => {
@@ -34,7 +35,7 @@ export const getNodesToSync = async () => {
 };
 
 export const populateLocalDb = async (data, opt) => {
-  return _DB.transaction("rw", _DB.nodes, async () => {
+  return _DB.transaction('rw', _DB.nodes, async () => {
     const nodes = formatUploadedNodes(data, opt);
     return await _DB.nodes.bulkPut(nodes);
   });

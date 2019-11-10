@@ -3,8 +3,8 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
   LOGOUT
-} from "../../globals/_action_types";
-import { getLocalUser } from "../../services/session";
+} from '../../globals/_action_types';
+import { getLocalUser } from '../../services/session';
 
 const user = getLocalUser();
 const initialState = user ? { loggedIn: true, user } : {};

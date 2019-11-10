@@ -1,4 +1,4 @@
-const { getNodeById, getNodeByUserId } = require("../node/controller");
+const { getNodeById, getNodeByUserId } = require('../node/controller');
 
 module.exports = {};
 

@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { push } from "../services/sync/sync";
+import React, { Component } from 'react';
+import { push } from '../services/sync/sync';
 
 class NodeAddOptions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      shared: ""
+      name: '',
+      shared: ''
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -15,7 +15,7 @@ class NodeAddOptions extends Component {
 
   handleInputChange(event) {
     const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
     this.setState({
@@ -25,13 +25,13 @@ class NodeAddOptions extends Component {
 
   async handleSubmit(event) {
     const { name, shared } = this.state;
-    let s = shared.split(",");
+    let s = shared.split(',');
     s = !s[0] ? [] : s;
     if (!name) return;
     //const node = buildNode(name, s);
     push({
-      type: "add",
-      data: { name: name, shared: s },
+      type: 'add',
+      data: { name: name, shared: s }
     });
     event.preventDefault();
   }

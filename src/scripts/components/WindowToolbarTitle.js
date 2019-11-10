@@ -1,19 +1,22 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { push } from "../services/sync/sync";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { push } from '../services/sync/sync';
 
 class WindowToolbarTitleNoConnect extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: this.props.name || '',
-    }
+      name: this.props.name || ''
+    };
     this.handleBlur = this.handleBlur.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidUpdate( prevProps ) {
-    if( prevProps._id !== this.props._id || prevProps.name !== this.props.name ) {
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps._id !== this.props._id ||
+      prevProps.name !== this.props.name
+    ) {
       this.setState({ name: this.props.name });
     }
   }
@@ -33,7 +36,7 @@ class WindowToolbarTitleNoConnect extends Component {
     }
 
     const _action = {
-      type: "update",
+      type: 'update',
       data: { _id: _id, name: this.state.name }
     };
 
@@ -44,7 +47,12 @@ class WindowToolbarTitleNoConnect extends Component {
     const { name } = this.state;
     console.log('RENDER TITLE');
     return (
-      <input type="text" value={name} onChange={this.handleChange} onBlur={this.handleBlur} />
+      <input
+        type="text"
+        value={name}
+        onChange={this.handleChange}
+        onBlur={this.handleBlur}
+      />
     );
   }
 }
@@ -55,7 +63,6 @@ const mapStateToProps = state => {
     name: state.windowNode.name
   };
 };
-
 
 const WindowToolbarTitle = connect(
   mapStateToProps,

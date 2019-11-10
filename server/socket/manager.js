@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const _ = require('lodash');
 const _SOCKET_USER_STORE = {};
 
 module.exports = {
@@ -31,9 +31,9 @@ module.exports = {
     const sID = socket.id;
     try {
       _.pull(_SOCKET_USER_STORE[uID], sID);
-      console.log("REMOVE_ACTION: ", _SOCKET_USER_STORE);
+      console.log('REMOVE_ACTION: ', _SOCKET_USER_STORE);
     } catch (e) {
-      console.log("Error Socket Manager during unregistration.");
+      console.log('Error Socket Manager during unregistration.');
     }
   },
 
@@ -48,7 +48,7 @@ module.exports = {
         _SOCKET_USER_STORE[uID].push(sID);
       }
     }
-    console.log("ADD_ACTION: ", _SOCKET_USER_STORE);
+    console.log('ADD_ACTION: ', _SOCKET_USER_STORE);
     next();
   }
 };

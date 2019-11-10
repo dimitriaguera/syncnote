@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { readThisNode } from "../redux/actions";
-import { push } from "../services/sync/sync";
-import NodeItemMenu from "./NodeItemMenu";
-import IconStatus from "./IconStatus";
-import Icon from "./Icon";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { readThisNode } from '../redux/actions';
+import { push } from '../services/sync/sync';
+import NodeItemMenu from './NodeItemMenu';
+import IconStatus from './IconStatus';
+import Icon from './Icon';
 
 class NoteItemNoConnect extends Component {
   constructor(props) {
@@ -12,8 +12,8 @@ class NoteItemNoConnect extends Component {
 
     this.state = {
       edit: false,
-      value: this.props.node ? this.props.node.name : '',
-    }
+      value: this.props.node ? this.props.node.name : ''
+    };
 
     this.handleToggleMode = this.handleToggleMode.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
@@ -27,7 +27,7 @@ class NoteItemNoConnect extends Component {
   }
 
   componentDidUpdate() {
-    if( this.state.edit && this.input.current ) {
+    if (this.state.edit && this.input.current) {
       console.log(this.input);
       this.input.current.focus();
     }
@@ -50,21 +50,21 @@ class NoteItemNoConnect extends Component {
 
     if (value && value !== node.name) {
       const _action = {
-        type: "update",
+        type: 'update',
         data: {
           _id: node._id,
           name: value
         }
       };
       push(_action);
-    };
+    }
   }
 
   // handleTestRunner(){
 
   //   const delay = 50;
   //   const loops = 100;
-    
+
   //   let count = 0;
 
   //   const testID = setInterval(() => {
@@ -89,13 +89,13 @@ class NoteItemNoConnect extends Component {
   handleAdd(e) {
     const { name, _id } = this.props.node;
     const childName = `Child of ${name}`;
-    push({ type: "add", data: { name: childName, parent: _id } });
+    push({ type: 'add', data: { name: childName, parent: _id } });
     e.preventDefault();
   }
 
   handleRemove(e) {
     const node = this.props.node;
-    const _action = { type: "remove", data: node };
+    const _action = { type: 'remove', data: node };
 
     push(_action);
   }
@@ -113,20 +113,34 @@ class NoteItemNoConnect extends Component {
 
     return (
       <div className="node-item">
-        <div className={classes.join(" ")}
-            style={{ paddingLeft: `${(level - 1) * 10}px` }} >
-            <div className="node-item-inner">
-            { edit ?
-              <input type="text" value={value} ref={this.input} onChange={this.handleChange} onBlur={this.handleBlur} /> :
-              <button className="name" onClick={this.handleSelect}><Icon name="file-text"/>{node.name}</button> 
-            }
-            <NodeItemMenu onClickEdit={this.handleToggleMode} 
-                          onClickAdd={this.handleAdd}
-                          onClickRemove={this.handleRemove} />
+        <div
+          className={classes.join(' ')}
+          style={{ paddingLeft: `${(level - 1) * 10}px` }}
+        >
+          <div className="node-item-inner">
+            {edit ? (
+              <input
+                type="text"
+                value={value}
+                ref={this.input}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+              />
+            ) : (
+              <button className="name" onClick={this.handleSelect}>
+                <Icon name="file-text" />
+                {node.name}
+              </button>
+            )}
+            <NodeItemMenu
+              onClickEdit={this.handleToggleMode}
+              onClickAdd={this.handleAdd}
+              onClickRemove={this.handleRemove}
+            />
 
             <IconStatus status={node._sync_status} />
             {/* <input type="button" value="Test" onClick={this.handleTestRunner} /> */}
-            </div>
+          </div>
         </div>
       </div>
     );
@@ -137,9 +151,6 @@ const mapDispatchToProps = dispatch => {
   return { selectToWindow: async _id => dispatch(await readThisNode(_id)) };
 };
 
-const NoteItem = connect(
-  null,
-  mapDispatchToProps
-)(NoteItemNoConnect);
+const NoteItem = connect(null, mapDispatchToProps)(NoteItemNoConnect);
 
 export default NoteItem;

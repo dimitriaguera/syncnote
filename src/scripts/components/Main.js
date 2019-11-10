@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import NodeAdd from "./NodeAdd";
-import NodeList from "./NodeList";
-import Window from "./Window";
+import React, { Component } from 'react';
+import NodeAdd from './NodeAdd';
+import NodeList from './NodeList';
+import Window from './Window';
 
 class List extends Component {
   render() {

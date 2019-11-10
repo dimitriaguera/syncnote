@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { login } from "../redux/actions";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { login } from '../redux/actions';
 
 class LoginNoConnect extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: "",
-      password: ""
+      username: '',
+      password: ''
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -16,7 +16,7 @@ class LoginNoConnect extends Component {
 
   handleInputChange(event) {
     const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
     this.setState({
@@ -29,7 +29,7 @@ class LoginNoConnect extends Component {
     try {
       this.props.loginHandler(password, username);
     } catch (err) {
-      console.log("From Component: ", err);
+      console.log('From Component: ', err);
     }
 
     event.preventDefault();
@@ -70,9 +70,6 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const Login = connect(
-  null,
-  mapDispatchToProps
-)(LoginNoConnect);
+const Login = connect(null, mapDispatchToProps)(LoginNoConnect);
 
 export default Login;

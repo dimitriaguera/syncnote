@@ -1,7 +1,7 @@
-const chalk = require("chalk");
-const mongodb = require("../db/mongodb");
-const uuidv1 = require("uuid/v1");
-const _ = require("lodash");
+const chalk = require('chalk');
+const mongodb = require('../db/mongodb');
+const uuidv1 = require('uuid/v1');
+const _ = require('lodash');
 
 module.exports = {
   init,
@@ -11,8 +11,8 @@ module.exports = {
 };
 
 function init() {
-  mongodb.getDb().createCollection("node", {}, function(err, results) {
-    console.log("Collection node created.");
+  mongodb.getDb().createCollection('node', {}, function(err, results) {
+    console.log('Collection node created.');
   });
 }
 
@@ -20,13 +20,13 @@ function nodeFactory(data, user) {
   const { _id, _tId, name, parent, content, shared } = data;
 
   if (!name) {
-    const err = new Error("You must give a name.");
+    const err = new Error('You must give a name.');
     err.statusCode = 400;
     throw err;
   }
 
   if (!user) {
-    const err = new Error("You must be authenticated.");
+    const err = new Error('You must be authenticated.');
     err.statusCode = 400;
     throw err;
   }
@@ -45,13 +45,13 @@ function nodeFactory(data, user) {
 
 function nodeMerge(old, update) {
   if (!old) {
-    const err = new Error("No node to update found.");
+    const err = new Error('No node to update found.');
     err.statusCode = 400;
     throw err;
   }
 
   if (_.isEmpty(update)) {
-    const err = new Error("Nothing to upate.");
+    const err = new Error('Nothing to upate.');
     err.statusCode = 400;
     throw err;
   }
@@ -68,7 +68,7 @@ function nodeMerge(old, update) {
 
 function preparNodeToUpdate(update) {
   if (!update._id || _.isEmpty(update)) {
-    const err = new Error("Nothing to update or no node Id.");
+    const err = new Error('Nothing to update or no node Id.');
     err.statusCode = 400;
     throw err;
   }
@@ -83,9 +83,9 @@ function preparNodeToUpdate(update) {
     _rev: uuidv1()
   });
 
-  console.log(chalk.yellow("PREPARED NODE TO UPDATE : "));
+  console.log(chalk.yellow('PREPARED NODE TO UPDATE : '));
   console.log(_node);
-  console.log(chalk.yellow("------------------------------"));
+  console.log(chalk.yellow('------------------------------'));
 
   return _node;
 }

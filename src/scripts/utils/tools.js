@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 export { objectToTree };
 
@@ -7,7 +7,7 @@ export { objectToTree };
 
 function objectToTree(
   nodes = {},
-  opts = { nodeId: "_id", parentId: "parent", root: "" }
+  opts = { nodeId: '_id', parentId: 'parent', root: '' }
 ) {
   const tree = [];
   const lookup = _.cloneDeep(nodes);

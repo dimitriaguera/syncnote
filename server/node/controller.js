@@ -1,5 +1,5 @@
-const mongodb = require("../db/mongodb");
-const { nodeFactory, nodeMerge } = require("./model");
+const mongodb = require('../db/mongodb');
+const { nodeFactory, nodeMerge } = require('./model');
 
 module.exports = {
   routerGetAllUserNode,
@@ -39,7 +39,7 @@ async function routerGetAllUserNode(req, res) {
 async function getAllNodes() {
   return await mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .find()
     .toArray();
 }
@@ -47,7 +47,7 @@ async function getAllNodes() {
 async function getNodeByUserId(userId) {
   return await mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .find({ $or: [{ owner: userId }, { shared: { $all: [userId] } }] })
     .toArray();
 }
@@ -55,27 +55,27 @@ async function getNodeByUserId(userId) {
 async function getNodeById(id) {
   return await mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .findOne({ _id: id });
 }
 
 async function addNode(node) {
   return await mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .insertOne(node);
 }
 
 async function updateNodeById(id, update) {
   return await mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .updateOne({ _id: id }, update, { upsert: false });
 }
 
 async function deleteNodeById(nodeId) {
   return await mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .deleteOne({ _id: nodeId });
 }

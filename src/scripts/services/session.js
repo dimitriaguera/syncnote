@@ -1,6 +1,6 @@
 const STORAGE = localStorage;
-const TOKEN_KEY = "_NEkOT";
-const USER_KEY = "_REsU";
+const TOKEN_KEY = '_NEkOT';
+const USER_KEY = '_REsU';
 
 /**
  * Store token on sessionStorage.
@@ -46,7 +46,7 @@ export function clearLocalStorage() {
 }
 
 export function registerStorageEvent(handler) {
-  window.addEventListener("storage", function(e) {
+  window.addEventListener('storage', function(e) {
     handler(e);
   });
 }
@@ -64,7 +64,7 @@ export function onUserChange(callNoUser, callNewUser) {
         }
       }
     } catch (e) {
-      console.log("Error on login switch.", e);
+      console.log('Error on login switch.', e);
     }
   });
 }

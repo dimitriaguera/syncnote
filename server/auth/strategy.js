@@ -1,9 +1,9 @@
-const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
-const jwt = require("jsonwebtoken");
-const { extractToken } = require("./service");
-const config = require("../../config.server");
-const mongodb = require("../db/mongodb");
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const jwt = require('jsonwebtoken');
+const { extractToken } = require('./service');
+const config = require('../../config.server');
+const mongodb = require('../db/mongodb');
 
 module.exports = {
   init: function(app, passport) {
@@ -27,7 +27,7 @@ function setStrategy(passport) {
           const _id = jwt_payload._id;
           const user = await mongodb
             .getDb()
-            .collection("user")
+            .collection('user')
             .findOne({ _id: _id });
           return done(null, user || false);
         } catch (e) {
@@ -40,7 +40,7 @@ function setStrategy(passport) {
 
 function socketStrategy() {
   return (socket, next) => {
-    console.log("Socket: Check token validity");
+    console.log('Socket: Check token validity');
 
     // Extract token from headers.
     let token = extractToken(socket.handshake.query.token);
@@ -52,15 +52,15 @@ function socketStrategy() {
     ) {
       // If error, return.
       if (err) {
-        console.log("Socket: Authentication error");
-        return next(new Error("Socket: Authentication error"));
+        console.log('Socket: Authentication error');
+        return next(new Error('Socket: Authentication error'));
       }
 
       try {
         const _id = jwt_payload._id;
         const user = await mongodb
           .getDb()
-          .collection("user")
+          .collection('user')
           .findOne({ _id: _id });
         socket.userId = user ? user._id : null;
         return next();

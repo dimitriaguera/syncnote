@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class AlertNoConnect extends Component {
   render() {
@@ -18,9 +18,6 @@ const mapStateToProps = state => {
   };
 };
 
-const Alert = connect(
-  mapStateToProps,
-  null
-)(AlertNoConnect);
+const Alert = connect(mapStateToProps, null)(AlertNoConnect);
 
 export default Alert;

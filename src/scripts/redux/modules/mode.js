@@ -1,11 +1,5 @@
-import {
-  MODE_ONLINE,
-  MODE_OFFLINE
-} from "../../globals/_action_types";
-import {
-  MODE_ONLINE_ID,
-  MODE_OFFLINE_ID
-} from "../../globals/_sync_status";
+import { MODE_ONLINE, MODE_OFFLINE } from '../../globals/_action_types';
+import { MODE_ONLINE_ID, MODE_OFFLINE_ID } from '../../globals/_sync_status';
 
 // Default online mode.
 const initialState = { id: MODE_ONLINE_ID };

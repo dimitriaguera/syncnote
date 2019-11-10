@@ -1,22 +1,22 @@
-import { store } from "../services/store";
-import { loginFetch } from "../services/auth/auth.api";
+import { store } from '../services/store';
+import { loginFetch } from '../services/auth/auth.api';
 import {
   populateLocalDbFromRemote,
   syncLocalDbToRemote
-} from "../services/sync/sync";
+} from '../services/sync/sync';
 import {
   initLocalDb,
   clearLocalDb,
   getAllLocalNodes,
   getLocalNodeById
-} from "../services/db/db.local";
-import socket from "../services/socket";
+} from '../services/db/db.local';
+import socket from '../services/socket';
 import {
   setLocalToken,
   setLocalUser,
   getLocalUser,
   clearLocalStorage
-} from "../services/session";
+} from '../services/session';
 import {
   BOOT_START,
   BOOT_SUCCESS,
@@ -44,7 +44,7 @@ import {
   SET_WINDOW_EDIT_READ_MODE,
   MODE_ONLINE,
   MODE_OFFLINE
-} from "../globals/_action_types";
+} from '../globals/_action_types';
 
 export const boot_start = () => {
   return { type: BOOT_START };
@@ -100,11 +100,11 @@ export const startSynchingProcess = async dispatch => {
   try {
     const user = getLocalUser();
     if (user) {
-      console.log("Start syncing process...");
+      console.log('Start syncing process...');
       syncLocalDbToRemote();
     }
   } catch (err) {
-    console.log("Error during synching process launch...", err);
+    console.log('Error during synching process launch...', err);
   }
 };
 
@@ -190,7 +190,7 @@ export const logout = dispatch => {
   clearLocalDb();
   socket.close();
   dispatch(logout_request());
-  dispatch(msg_success("Logged out."));
+  dispatch(msg_success('Logged out.'));
 };
 
 export const login_request = () => {
@@ -225,32 +225,34 @@ export const bulk_node_state_router = data => {
     // dispatch crud on nodeTree state
     dispatch(bulk_crud_node(data));
     // check if a node is displayed
-    if( state.windowNode._id ) {
+    if (state.windowNode._id) {
       // check if the displayed node is touch by crud
       // first check updated nodes
-      for( let i = 0, l = data.update.length; i < l; i++ ) {
+      for (let i = 0, l = data.update.length; i < l; i++) {
         const node = data.update[i];
         // if node updated is already displayed
-        if( node._id === state.windowNode._id ) {
+        if (node._id === state.windowNode._id) {
           // if content change
-          if( node.content !== state.windowNode.content
-              || node.name !== state.windowNode.name ) {
+          if (
+            node.content !== state.windowNode.content ||
+            node.name !== state.windowNode.name
+          ) {
             // dispatch changes on windowNode state
             const dNode = {
               name: node.name,
               content: node.content,
               conflicts: node._sync_conflict
-            }
+            };
             dispatch(update_window_node(dNode));
             break;
           }
         }
       }
       // then check deleted nodes
-      for( let i = 0, l = data.delete.length; i < l; i++ ) {
+      for (let i = 0, l = data.delete.length; i < l; i++) {
         const _id = data.delete[i];
         // if node updated is already displayed
-        if( _id === state.windowNode._id ) {
+        if (_id === state.windowNode._id) {
           // dispatch changes on windowNode state
           dispatch(clear_window_node());
           break;
@@ -320,4 +322,4 @@ export const set_window_edit_mode = () => {
 
 export const set_window_edit_read_mode = () => {
   return { type: SET_WINDOW_EDIT_READ_MODE };
-}
+};

@@ -1,17 +1,17 @@
-import axios from "axios";
-import config from "../../config.public";
-import { getLocalToken } from "./session";
+import axios from 'axios';
+import config from '../../config.public';
+import { getLocalToken } from './session';
 
 export const post = (url, data) => {
   const opt = {
-    method: "post",
+    method: 'post',
     baseURL: config.api.url,
     url: url,
     headers: {
       Authorization: getLocalToken(),
-      "Access-Control-Allow-Origin": "PUT, DELETE, POST, GET",
-      "Content-Type": "application/json; charset=UTF-8",
-      "X-Requested-With": "XMLHttpRequest"
+      'Access-Control-Allow-Origin': 'PUT, DELETE, POST, GET',
+      'Content-Type': 'application/json; charset=UTF-8',
+      'X-Requested-With': 'XMLHttpRequest'
     },
     data: data
   };
@@ -39,14 +39,14 @@ export const post = (url, data) => {
 
 export const get = (url, data) => {
   const opt = {
-    method: "get",
+    method: 'get',
     baseURL: config.api.url,
     url: url,
     headers: {
       Authorization: getLocalToken(),
-      "Access-Control-Allow-Origin": "PUT, DELETE, POST, GET",
-      "Content-Type": "application/json; charset=UTF-8",
-      "X-Requested-With": "XMLHttpRequest"
+      'Access-Control-Allow-Origin': 'PUT, DELETE, POST, GET',
+      'Content-Type': 'application/json; charset=UTF-8',
+      'X-Requested-With': 'XMLHttpRequest'
     },
     data: data
   };

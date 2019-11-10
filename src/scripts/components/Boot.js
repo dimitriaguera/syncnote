@@ -4,13 +4,13 @@
  * and set store to authenticated.
  */
 
-import React, { Component } from "react";
-import { BrowserRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 //import { Loader } from 'semantic-ui-react'
-import { initialize } from "../services/initialize";
-import App from "./App";
+import { initialize } from '../services/initialize';
+import App from './App';
 
 class Boot extends Component {
   constructor() {

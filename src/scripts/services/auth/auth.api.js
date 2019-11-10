@@ -1,8 +1,8 @@
-import { post } from "../fetch";
+import { post } from '../fetch';
 
 export const loginFetch = async (username, password) => {
   try {
-    const response = await post("/auth/login", {
+    const response = await post('/auth/login', {
       username: username,
       password: password
     });

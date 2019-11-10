@@ -1,31 +1,31 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { push } from "../services/sync/sync";
-import DebouncedTextarea from "./DebouncedTextarea";
-import { getLocalNodeById } from "../services/db/db.local";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { push } from '../services/sync/sync';
+import DebouncedTextarea from './DebouncedTextarea';
+import { getLocalNodeById } from '../services/db/db.local';
 
 class TextareaNoConnect extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      defaultValue: '',
-    }
+      defaultValue: ''
+    };
     this.sendContentChange = this.sendContentChange.bind(this);
   }
 
   async componentDidMount() {
-    if( this.props._id ) {
+    if (this.props._id) {
       const node = await getLocalNodeById(this.props._id);
-      if( node ) {
+      if (node) {
         this.setState({ defaultValue: node.content });
       }
     }
   }
 
-  async componentDidUpdate( prevProps ) {
-    if( prevProps._id !== this.props._id ) {
+  async componentDidUpdate(prevProps) {
+    if (prevProps._id !== this.props._id) {
       const node = await getLocalNodeById(this.props._id);
-      if( node ) {
+      if (node) {
         this.setState({ defaultValue: node.content || '' });
       }
     }
@@ -39,7 +39,7 @@ class TextareaNoConnect extends Component {
     }
 
     const _action = {
-      type: "update",
+      type: 'update',
       data: { _id: _id, content: value }
     };
 
@@ -51,14 +51,14 @@ class TextareaNoConnect extends Component {
     console.log('RENDER TEXTAREA');
     return (
       <div className="node-edit">
-        { _id &&
-        <DebouncedTextarea
-          value={this.state.defaultValue}
-          targetId={_id}
-          onChange={this.sendContentChange}
-          time={200}
-        />
-        }
+        {_id && (
+          <DebouncedTextarea
+            value={this.state.defaultValue}
+            targetId={_id}
+            onChange={this.sendContentChange}
+            time={200}
+          />
+        )}
       </div>
     );
   }
@@ -70,10 +70,6 @@ const mapStateToProps = state => {
   };
 };
 
-
-const Textarea = connect(
-  mapStateToProps,
-  null
-)(TextareaNoConnect);
+const Textarea = connect(mapStateToProps, null)(TextareaNoConnect);
 
 export default Textarea;

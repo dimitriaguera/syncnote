@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Route } from "react-router-dom";
-import Login from "./Login";
-import Main from "./Main";
-import Alert from "./Alert";
-import Header from "./Header";
-import "../../App.scss";
+import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
+import Login from './Login';
+import Main from './Main';
+import Alert from './Alert';
+import Header from './Header';
+import '../../App.scss';
 
 class App extends Component {
   render() {

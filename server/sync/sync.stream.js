@@ -1,8 +1,7 @@
-
-const chalk = require("chalk");
-const broker = require("../share/broker");
-const { emitToConcernedUsers } = require("../socket/manager");
-const { _nodeStream } = require("../node/stream");
+const chalk = require('chalk');
+const broker = require('../share/broker');
+const { emitToConcernedUsers } = require('../socket/manager');
+const { _nodeStream } = require('../node/stream');
 
 module.exports = {
   registerToNodesStream: io => {
@@ -10,24 +9,24 @@ module.exports = {
 
     // register to remote DB change stream.
     // First handle changes to update broker state.
-    _nodeStream().on("change", data => {
+    _nodeStream().on('change', data => {
       switch (data.operationType) {
-        case "insert":
+        case 'insert':
           broker.store(data.fullDocument);
           cuIds = broker.get(data.documentKey._id);
           break;
-        case "update":
+        case 'update':
           broker.update(
             data.documentKey._id,
             data.updateDescription.updatedFields
           );
           cuIds = broker.get(data.documentKey._id);
           break;
-        case "replace":
+        case 'replace':
           broker.update(data.documentKey._id, data.fullDocument);
           cuIds = broker.get(data.documentKey._id);
           break;
-        case "delete":
+        case 'delete':
           cuIds = broker.delete(data.documentKey._id);
           break;
         default:
@@ -37,10 +36,10 @@ module.exports = {
 
       // Then emit changes to all concerned users sockets.
       // The handler emit changes on room "sync_change" to sockets clients if concerned.
-      console.log(chalk.yellow("EMITED DATA : "));
+      console.log(chalk.yellow('EMITED DATA : '));
       console.log(data);
-      console.log(chalk.yellow("------------------------------"));
-      emitToConcernedUsers(io, "sync_change", cuIds, data);
+      console.log(chalk.yellow('------------------------------'));
+      emitToConcernedUsers(io, 'sync_change', cuIds, data);
     });
   }
 };

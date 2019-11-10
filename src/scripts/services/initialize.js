@@ -1,5 +1,5 @@
-import { store } from "./store";
-import { startBootLocalProcess, startSynchingProcess } from "../redux/actions";
+import { store } from './store';
+import { startBootLocalProcess, startSynchingProcess } from '../redux/actions';
 
 // Start and orchestr app bouting process.
 export const initialize = async () => {

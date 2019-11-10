@@ -1,5 +1,5 @@
-const _ = require("lodash");
-const { getAllNodes } = require("../node/controller");
+const _ = require('lodash');
+const { getAllNodes } = require('../node/controller');
 
 const USERS_NODES_CONCERN = {};
 
@@ -17,7 +17,7 @@ module.exports = {
       // Message in the bottle.
       console.log(`Node broker initialized with ${nodes.length} nodes.`);
     } catch (err) {
-      console.log("Error init node broker: ", err);
+      console.log('Error init node broker: ', err);
     }
   },
 
@@ -29,7 +29,7 @@ module.exports = {
     if (updates.shared || updates.owner) {
       const cuIds = updateConcernedUsersIds(_.cloneDeep(updates));
       USERS_NODES_CONCERN[nId] = cuIds;
-      console.log("UPDATE BROKER : ", USERS_NODES_CONCERN);
+      console.log('UPDATE BROKER : ', USERS_NODES_CONCERN);
       return cuIds;
     }
     return null;
@@ -38,7 +38,7 @@ module.exports = {
   store: node => {
     const cuIds = extractConcernedUsersIds(node);
     USERS_NODES_CONCERN[node._id] = cuIds;
-    console.log("STORE BROKER : ", USERS_NODES_CONCERN);
+    console.log('STORE BROKER : ', USERS_NODES_CONCERN);
     return cuIds;
   },
 

@@ -8,7 +8,7 @@ const WindowToolbar = ({ name }) => {
       <WindowToolbarTitle />
       <WindowToolbarMode />
     </div>
-  )
-}
+  );
+};
 
 export default WindowToolbar;

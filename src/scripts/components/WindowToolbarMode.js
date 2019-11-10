@@ -1,6 +1,10 @@
-import React from "react";
-import { connect } from "react-redux";
-import { set_window_read_mode, set_window_edit_mode, set_window_edit_read_mode } from "../redux/actions";
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  set_window_read_mode,
+  set_window_edit_mode,
+  set_window_edit_read_mode
+} from '../redux/actions';
 
 const WindowToolbarModeNoConnect = ({ readMode, editMode, bothMode, mode }) => {
   return (
@@ -10,7 +14,7 @@ const WindowToolbarModeNoConnect = ({ readMode, editMode, bothMode, mode }) => {
       <button onClick={bothMode}>both</button>
     </div>
   );
-}
+};
 
 const mapStateToProps = state => {
   return {

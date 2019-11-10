@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const config = require("../../config.server");
-const mongodb = require("../db/mongodb");
-const { userFactory } = require("./model");
-const { comparePassword, secureUser, hashPassword } = require("./service");
+const jwt = require('jsonwebtoken');
+const config = require('../../config.server');
+const mongodb = require('../db/mongodb');
+const { userFactory } = require('./model');
+const { comparePassword, secureUser } = require('./service');
 
 module.exports = {
   login,
@@ -16,14 +16,14 @@ async function login(req, res, next) {
   try {
     const user = await mongodb
       .getDb()
-      .collection("user")
+      .collection('user')
       .findOne({ username: username });
     if (!user) {
-      throw "Wrong user or password";
+      throw new Error('Wrong user or password');
     }
     const isValidPwd = await comparePassword(user, password);
     if (!isValidPwd) {
-      throw "Wrong user or password";
+      throw new Error('Wrong user or password');
     }
     const token = jwt.sign(secureUser(user), config.security.jwtSecret, {
       expiresIn: config.session.maxAgeToken
@@ -36,7 +36,7 @@ async function login(req, res, next) {
       }
     });
   } catch (e) {
-    res.status(400).json({ success: false, error: e });
+    res.status(400).json({ success: false, error: e.message });
   }
 }
 
@@ -44,7 +44,7 @@ async function register(req, res) {
   const _user = await userFactory(req.body);
   const _res = await mongodb
     .getDb()
-    .collection("user")
+    .collection('user')
     .insertOne(_user);
   res.json({
     success: true,
@@ -55,11 +55,11 @@ async function register(req, res) {
 function getAll(req, res) {
   mongodb
     .getDb()
-    .collection("user")
+    .collection('user')
     .find()
     .toArray((err, docs) => {
       if (err) {
-        return res.json({ success: false, error: "Nothing." });
+        return res.json({ success: false, error: 'Nothing.' });
       }
       res.json(docs);
     });

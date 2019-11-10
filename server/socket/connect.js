@@ -1,15 +1,15 @@
-const socketServer = require("socket.io");
-const { socketStrategy } = require("../auth/strategy");
-const chalk = require("chalk");
-const http = require("http");
-const { addUserMiddleware, unregisterUser } = require("./manager");
-const { registerToSync } = require("../sync/sync.controller");
-const { registerToNodesStream } = require("../sync/sync.stream");
+const socketServer = require('socket.io');
+const { socketStrategy } = require('../auth/strategy');
+const chalk = require('chalk');
+const http = require('http');
+const { addUserMiddleware, unregisterUser } = require('./manager');
+const { registerToSync } = require('../sync/sync.controller');
+const { registerToNodesStream } = require('../sync/sync.stream');
 
 module.exports = function(app) {
   const serve = http.createServer(app);
   const io = socketServer(serve);
-  const nsp = io.of("/socket");
+  const nsp = io.of('/socket');
 
   // Stream events registration.
   registerToNodesStream(nsp);
@@ -19,7 +19,7 @@ module.exports = function(app) {
   nsp.use(addUserMiddleware);
 
   // Connexion handler.
-  nsp.on("connection", eventRegistration);
+  nsp.on('connection', eventRegistration);
 
   return serve;
 };
@@ -33,7 +33,7 @@ function eventRegistration(socket) {
     chalk.cyan(`CONNECTED to socket ${socket.id} for user ID ${socket.userId}`)
   );
   // Socket disconnexion.
-  socket.on("disconnect", function() {
+  socket.on('disconnect', function() {
     unregisterUser(socket);
     console.log(
       chalk.cyan(

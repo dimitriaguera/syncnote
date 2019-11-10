@@ -1,6 +1,6 @@
-import { store } from "../store";
-import { switchLogin, logout } from "../../redux/actions";
-import { onUserChange } from "../session";
+import { store } from '../store';
+import { switchLogin, logout } from '../../redux/actions';
+import { onUserChange } from '../session';
 
 onUserChange(
   () => {

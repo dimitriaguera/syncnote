@@ -1,5 +1,5 @@
-const mongodb = require("../db/mongodb");
-const { hashPassword } = require("./service");
+const mongodb = require('../db/mongodb');
+const { hashPassword } = require('./service');
 
 module.exports = {
   init,
@@ -8,14 +8,14 @@ module.exports = {
 
 function init() {
   mongodb.getDb().createCollection(
-    "user",
+    'user',
     {
       capped: true,
       size: 100000,
       max: 5000
     },
     function(err, results) {
-      console.log("Collection user created.");
+      console.log('Collection user created.');
     }
   );
 }
@@ -25,7 +25,7 @@ async function userFactory(data) {
 
   if (!username || !password || !cfPassword) {
     const err = new Error(
-      "You must give a Username, password and confirmation password."
+      'You must give a Username, password and confirmation password.'
     );
     err.statusCode = 400;
     throw err;
@@ -33,7 +33,7 @@ async function userFactory(data) {
 
   if (password !== cfPassword) {
     const err = new Error(
-      "Your password and confirmation password do not match."
+      'Your password and confirmation password do not match.'
     );
     err.statusCode = 400;
     throw err;

@@ -1,7 +1,6 @@
-const jwt = require("jsonwebtoken");
-const path = require("path");
-const config = require("../../config.server");
-const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const config = require('../../config.server');
+const bcrypt = require('bcrypt');
 
 module.exports = {
   hashPassword: function(password) {

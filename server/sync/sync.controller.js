@@ -1,13 +1,12 @@
-
-const chalk = require("chalk");
+const chalk = require('chalk');
 const {
   getNodeById,
   updateNodeById,
   getNodeByUserId
-} = require("../node/controller");
+} = require('../node/controller');
 //const { broadcastOwnerAndShare } = require("../socket/manager");
-const { preparNodeToUpdate } = require("../node/model");
-const mongodb = require("../db/mongodb");
+const { preparNodeToUpdate } = require('../node/model');
+const mongodb = require('../db/mongodb');
 
 const SYNC_WAIT_OK = 0;
 const SYNC_WAIT_CREA = 1;
@@ -17,8 +16,8 @@ const SYNC_WAIT_DEL = 3;
 module.exports = {
   registerToSync: socket => {
     // Register on socket event.
-    socket.on("push", pushHandlerBuilder(socket, "push_ok", "push_errors"));
-    socket.on("sync", syncHanlerBuilder(socket, "sync_ok", "sync_errors"));
+    socket.on('push', pushHandlerBuilder(socket, 'push_ok', 'push_errors'));
+    socket.on('sync', syncHanlerBuilder(socket, 'sync_ok', 'sync_errors'));
   }
 };
 
@@ -63,10 +62,9 @@ function syncHanlerBuilder(socket, roomOk, roomError) {
 function pushHandlerBuilder(socket, roomOk, roomError) {
   return async (localNode, send) => {
     try {
-
-      console.log(chalk.yellow("RECIEVE DATA : "));
+      console.log(chalk.yellow('RECIEVE DATA : '));
       console.log(localNode);
-      console.log(chalk.yellow("------------------------------"));
+      console.log(chalk.yellow('------------------------------'));
 
       // Get node's ID.
       const _nId = localNode._id;
@@ -74,9 +72,9 @@ function pushHandlerBuilder(socket, roomOk, roomError) {
       // Get node in remote db.
       const remoteNode = await getNodeById(_nId);
 
-      console.log(chalk.yellow("REMOTE NODE BEFORE UPDATE : "));
+      console.log(chalk.yellow('REMOTE NODE BEFORE UPDATE : '));
       console.log(remoteNode);
-      console.log(chalk.yellow("------------------------------"));
+      console.log(chalk.yellow('------------------------------'));
 
       // Compare all nodes and dispatch on right sync action.
       const { _actions, _bulk } = await compareForSync(
@@ -86,9 +84,9 @@ function pushHandlerBuilder(socket, roomOk, roomError) {
         }
       );
 
-      console.log(chalk.yellow("ACTION BUILD : "));
+      console.log(chalk.yellow('ACTION BUILD : '));
       console.log(_actions);
-      console.log(chalk.yellow("------------------------------"));
+      console.log(chalk.yellow('------------------------------'));
 
       // Send immediate CRUD or CONFLICT actions to perform in local.
       send(_actions);
@@ -115,27 +113,27 @@ class Action {
     this.data = null;
   }
   add(data) {
-    this.type = "add";
+    this.type = 'add';
     this.data = data;
     return this;
   }
   update(data) {
-    this.type = "update";
+    this.type = 'update';
     this.data = data;
     return this;
   }
   remove(data) {
-    this.type = "remove";
+    this.type = 'remove';
     this.data = data;
     return this;
   }
   ok(data) {
-    this.type = "ok";
+    this.type = 'ok';
     this.data = data;
     return this;
   }
   conflict(data) {
-    this.type = "conflict";
+    this.type = 'conflict';
     this.data = data;
     return this;
   }
@@ -152,7 +150,7 @@ async function compareForSync(remoteNodes, localNodes) {
   const local = Object.assign({}, localNodes);
   const bulk = mongodb
     .getDb()
-    .collection("node")
+    .collection('node')
     .initializeUnorderedBulkOp();
 
   remoteNodes.forEach(remoteNode => {
@@ -183,9 +181,9 @@ async function compareForSync(remoteNodes, localNodes) {
           // ALREADY EXIST IN REMOTE
           _actions.push(
             _action.conflict({
-              code: "EXIST",
-              text: "Node already exist in remote DB",
-              from: "remote",
+              code: 'EXIST',
+              text: 'Node already exist in remote DB',
+              from: 'remote',
               _id: remoteNode._id
             })
           );
@@ -220,11 +218,11 @@ async function compareForSync(remoteNodes, localNodes) {
           // CONFLICT ID ALREADY EXIST
           _actions.push(
             _action.conflict({
-              code: "EXIST",
-              from: "remote",
-              text: "Node already exist in remote DB",
+              code: 'EXIST',
+              from: 'remote',
+              text: 'Node already exist in remote DB',
               rNode: remoteNode,
-              _id: remoteNode._id,
+              _id: remoteNode._id
             })
           );
           break;
@@ -232,11 +230,11 @@ async function compareForSync(remoteNodes, localNodes) {
           // CONFLICT MERGE REQUEST
           _actions.push(
             _action.conflict({
-              code: "MERGE",
-              from: "remote",
-              text: "Node update conflict",
+              code: 'MERGE',
+              from: 'remote',
+              text: 'Node update conflict',
               rNode: remoteNode,
-              _id: remoteNode._id,
+              _id: remoteNode._id
             })
           );
           break;
@@ -244,11 +242,11 @@ async function compareForSync(remoteNodes, localNodes) {
           // CONFLICT DEL NODE UPDATED
           _actions.push(
             _action.conflict({
-              code: "DEL_UPDT",
-              from: "remote",
-              text: "Node to delete have been updated bedore",
+              code: 'DEL_UPDT',
+              from: 'remote',
+              text: 'Node to delete have been updated bedore',
               rNode: remoteNode,
-              _id: remoteNode._id,
+              _id: remoteNode._id
             })
           );
           break;

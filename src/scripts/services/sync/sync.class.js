@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk from 'chalk';
 import {
   putNodeToLocalDb,
   updateNodeToLocalDb,
@@ -9,7 +9,7 @@ import {
   bulkPutNodeToLocalDb,
   bulkUpdateNodeToLocalDb,
   bulkDeleteNodeToLocalDb
-} from "../db/db.local";
+} from '../db/db.local';
 
 import {
   prepareSyncedLocalNodeToAdd,
@@ -21,7 +21,7 @@ import {
   prepareNodesToSync,
   isLastTransaction,
   isOwnerOfThisTransaction
-} from "../node/node.factory";
+} from '../node/node.factory';
 
 import {
   SYNC_WAIT_OK
@@ -31,7 +31,7 @@ import {
   SYNC_STATUS_DONE,
   SYNC_STATUS_PENDING,
   SYNC_STATUS_CONFLICT*/
-} from "../../globals/_sync_status";
+} from '../../globals/_sync_status';
 
 import { remoteInterface } from './sync.remote';
 
@@ -45,7 +45,7 @@ class LocalSyncBulk {
     // Get local nodes.
     const localNodes = await getNodesToSync();
     // Format local nodes.
-    const { toRemote, toLocal } = prepareNodesToSync(localNodes, "_id");
+    const { toRemote, toLocal } = prepareNodesToSync(localNodes, '_id');
     // Store remote on memory.
     this.toRemote = toRemote;
     // Update local transaction pool for each node.
@@ -85,7 +85,7 @@ class LocalSyncBulk {
     try {
       await Promise.all(running);
     } catch (err) {
-      console.log("LOCAL RUNNER ERRORS: ", err);
+      console.log('LOCAL RUNNER ERRORS: ', err);
     }
   }
 
@@ -125,31 +125,31 @@ class LocalSync {
     let _action = null;
 
     switch (streamData.operationType) {
-      case "insert":
+      case 'insert':
         _action = await checkConflict(
           streamData.documentKey._id,
           streamData.fullDocument,
-          "add"
+          'add'
         );
         break;
 
-      case "update":
+      case 'update':
         _action = await checkConflict(
           streamData.documentKey._id,
           streamData.updateDescription.updatedFields,
-          "update"
+          'update'
         );
         break;
 
-      case "replace":
+      case 'replace':
         _action = await checkConflict(
           streamData.documentKey._id,
           streamData.fullDocument,
-          "update"
+          'update'
         );
         break;
 
-      case "delete":
+      case 'delete':
         _action = new Action();
         _action.remove(streamData.documentKey._id);
         break;
@@ -159,7 +159,7 @@ class LocalSync {
     }
 
     if (!_action) {
-      console.log("Let it be...");
+      console.log('Let it be...');
     } else {
       this.init(_action);
       return this.run();
@@ -168,7 +168,7 @@ class LocalSync {
 
   init(_action) {
     if (_action) {
-      if (this[_action.type] && typeof this[_action.type] === "function") {
+      if (this[_action.type] && typeof this[_action.type] === 'function') {
         this[_action.type](_action.data);
       } else {
         throw new Error(
@@ -204,7 +204,7 @@ class LocalSync {
   }
 
   ok(node) {
-    this.callback = () => remoteInterface.nextPush( node._id );
+    this.callback = () => remoteInterface.nextPush(node._id);
     this.func = updateNodeToLocalDb.bind(
       null,
       node._id,
@@ -225,12 +225,12 @@ class LocalSync {
     if (this.func) {
       try {
         const soWhat = await this.func();
-        if( this.callback ) {
+        if (this.callback) {
           this.callback();
         }
         //console.log("LOCAL RUN REPORT: ", soWhat);
       } catch (err) {
-        console.log("LOCAL RUNNER ERRORS: ", err);
+        console.log('LOCAL RUNNER ERRORS: ', err);
       }
     }
   }
@@ -242,32 +242,32 @@ class Action {
     this.data = null;
   }
   add(data) {
-    this.type = "add";
+    this.type = 'add';
     this.data = data;
     return this;
   }
   update(data) {
-    this.type = "update";
+    this.type = 'update';
     this.data = data;
     return this;
   }
   refresh(data) {
-    this.type = "refresh";
+    this.type = 'refresh';
     this.data = data;
     return this;
   }
   remove(data) {
-    this.type = "remove";
+    this.type = 'remove';
     this.data = data;
     return this;
   }
   ok(data) {
-    this.type = "ok";
+    this.type = 'ok';
     this.data = data;
     return this;
   }
   conflict(data) {
-    this.type = "conflict";
+    this.type = 'conflict';
     this.data = data;
     return this;
   }
@@ -284,7 +284,7 @@ async function checkConflict(_id, node, type) {
   const _action = new Action();
 
   // If type conflict.
-  if (type === "conflict") {
+  if (type === 'conflict') {
     console.log('============= check-conflict : CONFLICT');
     _action.conflict(node);
     return _action;
@@ -297,7 +297,7 @@ async function checkConflict(_id, node, type) {
   }
 
   // Store last _rev to queue
-  remoteInterface.refresh( _id, _rev );
+  remoteInterface.refresh(_id, _rev);
 
   // Get local node.
   const localNode = await getLocalNodeById(_id);
@@ -311,20 +311,16 @@ async function checkConflict(_id, node, type) {
 
   // Handle local conflict and prevent local overiding
   // just update rNode in conflict object
-  if ( localNode._sync_conflict ) {
+  if (localNode._sync_conflict) {
     console.log('============= check-conflict : LOCAL CONFLICT');
-    _action.conflict(
-      Object.assign( localNode._sync_conflict, { rNode: node } )
-    );
+    _action.conflict(Object.assign(localNode._sync_conflict, { rNode: node }));
     return _action;
   }
 
   // If node streamed from current client sync transaction, just say sync ok.
   if (isLastTransaction(_tId, localNode)) {
     console.log('============= check-conflict : NO CONFLICT 2');
-    _action.ok(
-      Object.assign(localNode, { _rev })
-    );
+    _action.ok(Object.assign(localNode, { _rev }));
 
     // proceed next waiting push sync for this node
     return _action;
@@ -348,9 +344,9 @@ async function checkConflict(_id, node, type) {
   console.log('============= check-conflict : CONFLICT....');
   // Else, localNode change not saved, go conflict.
   _action.conflict({
-    code: "LOCAL_NO_SAVE",
-    from: "local",
-    text: "Local node change not saved",
+    code: 'LOCAL_NO_SAVE',
+    from: 'local',
+    text: 'Local node change not saved',
     rNode: localNode
   });
   return _action;

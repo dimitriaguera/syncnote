@@ -11,7 +11,7 @@ import {
   SET_WINDOW_READ_MODE,
   SET_WINDOW_EDIT_MODE,
   SET_WINDOW_EDIT_READ_MODE
-} from "../../globals/_action_types";
+} from '../../globals/_action_types';
 
 const initialState = {};
 
@@ -61,7 +61,13 @@ const treeNode = (state = initialState, action) => {
 };
 
 const windowNode = (
-  state = { _id: null, content: null, name: null, conflicts: null, mode: "read" },
+  state = {
+    _id: null,
+    content: null,
+    name: null,
+    conflicts: null,
+    mode: 'read'
+  },
   action
 ) => {
   switch (action.type) {
@@ -75,7 +81,7 @@ const windowNode = (
         mode: action.mode ? action.mode : state.mode
       };
     case UPDATE_WINDOW_NODE:
-      const nState = Object.assign({}, state,  action.update);
+      const nState = Object.assign({}, state, action.update);
       return nState;
     case CLEAR_WINDOW_NODE:
       return {
@@ -84,14 +90,14 @@ const windowNode = (
         name: null,
         content: null,
         conflicts: null,
-        mode: "read"
+        mode: 'read'
       };
     case SET_WINDOW_READ_MODE:
-      return { ...state, mode: "read" };
+      return { ...state, mode: 'read' };
     case SET_WINDOW_EDIT_MODE:
-      return { ...state, mode: "edit" };
+      return { ...state, mode: 'edit' };
     case SET_WINDOW_EDIT_READ_MODE:
-        return { ...state, mode: "edit-read" };
+      return { ...state, mode: 'edit-read' };
     default:
       return state;
   }
