@@ -32,6 +32,7 @@
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write",
+      "lint",
       "git add"
     ]
   },
@@ -39,7 +40,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint server/**/*.js src/**/*/*.js"
   },
   "eslintConfig": {
     "extends": [
