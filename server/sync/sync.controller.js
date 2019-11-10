@@ -1,9 +1,5 @@
 const chalk = require('chalk');
-const {
-  getNodeById,
-  updateNodeById,
-  getNodeByUserId
-} = require('../node/controller');
+const { getNodeById, getNodeByUserId } = require('../node/controller');
 //const { broadcastOwnerAndShare } = require("../socket/manager");
 const { preparNodeToUpdate } = require('../node/model');
 const mongodb = require('../db/mongodb');
@@ -22,9 +18,9 @@ module.exports = {
 };
 
 // Testing function
-async function stall(stallTime = 300) {
-  await new Promise(resolve => setTimeout(resolve, stallTime));
-}
+// async function stall(stallTime = 300) {
+//   await new Promise(resolve => setTimeout(resolve, stallTime));
+// }
 
 // Manage Sync client request.
 function syncHanlerBuilder(socket, roomOk, roomError) {

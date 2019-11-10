@@ -1,4 +1,3 @@
-const mongodb = require('mongodb');
 const passport = require('passport');
 const { asyncMiddleware } = require('../utils/tools');
 const { authByUserId } = require('../auth/authorization');

@@ -30,9 +30,9 @@
     "uuid": "^3.3.2"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write",
-      "lint",
+      "./node_modules/.bin/eslint --max-warnings=0",
       "git add"
     ]
   },
@@ -40,8 +40,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint server/**/*.js src/**/*/*.js"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
