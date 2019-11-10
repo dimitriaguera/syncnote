@@ -2,7 +2,7 @@ import { store } from '../store';
 import { MODE_OFFLINE_ID } from '../../globals/_sync_status';
 import {
   //create_node,
-  bulk_crud_node,
+  //bulk_crud_node,
   bulk_node_state_router
   //update_node,
   //delete_node

@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import {
   putNodeToLocalDb,
   updateNodeToLocalDb,
@@ -6,7 +5,7 @@ import {
   getNodesToSync,
   getLocalNodeById,
   bulkAddNodeToLocalDb,
-  bulkPutNodeToLocalDb,
+  //bulkPutNodeToLocalDb,
   bulkUpdateNodeToLocalDb,
   bulkDeleteNodeToLocalDb
 } from '../db/db.local';
@@ -224,7 +223,7 @@ class LocalSync {
   async run() {
     if (this.func) {
       try {
-        const soWhat = await this.func();
+        await this.func();
         if (this.callback) {
           this.callback();
         }

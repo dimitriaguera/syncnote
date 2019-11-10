@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.1",
-    "bcrypt": "^3.0.1",
+    "bcrypt": "^3.0.6",
     "chalk": "^2.4.1",
     "cors": "^2.8.4",
     "dateformat": "^3.0.3",
@@ -15,7 +15,6 @@
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.15",
     "mongodb": "^3.3.3",
-    "node-sass": "^4.13.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "react": "^16.6.0",
@@ -64,6 +63,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
+    "node-sass": "^4.13.0",
     "prettier": "^1.19.1"
   }
 }

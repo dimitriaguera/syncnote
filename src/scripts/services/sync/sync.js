@@ -5,7 +5,7 @@ import {
   getLocalNodeById,
   updateNodeToLocalDb
 } from '../db/db.local';
-import { getReferentNode, isOffline } from '../state/app.state';
+import { isOffline } from '../state/app.state';
 import { get } from '../fetch';
 import {
   prepareLocalNodeBeforeCreatePush,
