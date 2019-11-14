@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import popover from './Popover';
 import NodeItem from './NodeItem';
 import { objectToTree } from '../utils/tools';
 
@@ -29,7 +30,7 @@ class NodeListNoConnect extends Component {
 
   render() {
     console.log('RENDER');
-    const { nodes } = this.props;
+    const { nodes, openPopover } = this.props;
 
     const tree = objectToTree(nodes);
     const rows = this.makeRows(tree);
@@ -37,7 +38,12 @@ class NodeListNoConnect extends Component {
     return (
       <div className="list">
         {rows.map(node => (
-          <NodeItem key={node._id} node={node} level={node.level} />
+          <NodeItem
+            key={node._id}
+            openPopover={openPopover}
+            node={node}
+            level={node.level}
+          />
         ))}
       </div>
     );
@@ -54,9 +60,8 @@ const mapDispatchToProps = dispatch => {
   return {};
 };
 
-const NodeList = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(NodeListNoConnect);
+const NodeList = popover(
+  connect(mapStateToProps, mapDispatchToProps)(NodeListNoConnect)
+);
 
 export default NodeList;

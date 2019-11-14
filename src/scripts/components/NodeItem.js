@@ -24,6 +24,7 @@ class NoteItemNoConnect extends Component {
     //this.handleTestRunner = this.handleTestRunner.bind(this);
 
     this.input = React.createRef();
+    this.refMenu = React.createRef();
   }
 
   componentDidUpdate() {
@@ -34,6 +35,7 @@ class NoteItemNoConnect extends Component {
   }
 
   handleToggleMode(e) {
+    e.stopPropagation();
     this.setState({ edit: !this.state.edit });
   }
 
@@ -87,13 +89,14 @@ class NoteItemNoConnect extends Component {
   // }
 
   handleAdd(e) {
+    e.stopPropagation();
     const { name, _id } = this.props.node;
     const childName = `Child of ${name}`;
     push({ type: 'add', data: { name: childName, parent: _id } });
-    e.preventDefault();
   }
 
   handleRemove(e) {
+    e.stopPropagation();
     const node = this.props.node;
     const _action = { type: 'remove', data: node };
 
@@ -132,11 +135,21 @@ class NoteItemNoConnect extends Component {
                 {node.name}
               </button>
             )}
-            <NodeItemMenu
-              onClickEdit={this.handleToggleMode}
-              onClickAdd={this.handleAdd}
-              onClickRemove={this.handleRemove}
-            />
+
+            <button
+              ref={this.refMenu}
+              onClick={e =>
+                this.props.openPopover(e, this.refMenu, () => (
+                  <NodeItemMenu
+                    onClickEdit={this.handleToggleMode}
+                    onClickAdd={this.handleAdd}
+                    onClickRemove={this.handleRemove}
+                  />
+                ))
+              }
+            >
+              <Icon name="more-vertical" />
+            </button>
 
             <IconStatus status={node._sync_status} />
             {/* <input type="button" value="Test" onClick={this.handleTestRunner} /> */}
