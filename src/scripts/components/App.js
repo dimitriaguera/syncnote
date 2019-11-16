@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
+import { popoverContainer } from './Popover';
 import Login from './Login';
 import Main from './Main';
 import Alert from './Alert';
@@ -8,6 +9,7 @@ import '../../App.scss';
 
 class App extends Component {
   render() {
+    console.log('RENDER APP');
     return (
       <div className="App">
         <Header />
@@ -21,4 +23,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default popoverContainer(App);

@@ -5,6 +5,7 @@ import { push } from '../services/sync/sync';
 import NodeItemMenu from './NodeItemMenu';
 import IconStatus from './IconStatus';
 import Icon from './Icon';
+import createPopover from './Popover';
 
 class NoteItemNoConnect extends Component {
   constructor(props) {
@@ -24,7 +25,6 @@ class NoteItemNoConnect extends Component {
     //this.handleTestRunner = this.handleTestRunner.bind(this);
 
     this.input = React.createRef();
-    this.refMenu = React.createRef();
   }
 
   componentDidUpdate() {
@@ -89,14 +89,16 @@ class NoteItemNoConnect extends Component {
   // }
 
   handleAdd(e) {
-    e.stopPropagation();
+    e.preventDefault();
+
     const { name, _id } = this.props.node;
     const childName = `Child of ${name}`;
     push({ type: 'add', data: { name: childName, parent: _id } });
   }
 
   handleRemove(e) {
-    e.stopPropagation();
+    e.preventDefault();
+
     const node = this.props.node;
     const _action = { type: 'remove', data: node };
 
@@ -113,6 +115,8 @@ class NoteItemNoConnect extends Component {
     const { edit, value } = this.state;
 
     const classes = [`node-status-${node._sync_status}`];
+
+    console.log('RENDER NODE ITEM');
 
     return (
       <div className="node-item">
@@ -136,20 +140,15 @@ class NoteItemNoConnect extends Component {
               </button>
             )}
 
-            <button
-              ref={this.refMenu}
-              onClick={e =>
-                this.props.openPopover(e, this.refMenu, () => (
-                  <NodeItemMenu
-                    onClickEdit={this.handleToggleMode}
-                    onClickAdd={this.handleAdd}
-                    onClickRemove={this.handleRemove}
-                  />
-                ))
-              }
+            <MenuPopover
+              onClickEdit={this.handleToggleMode}
+              onClickAdd={this.handleAdd}
+              onClickRemove={this.handleRemove}
             >
-              <Icon name="more-vertical" />
-            </button>
+              <button>
+                <Icon name="more-vertical" />
+              </button>
+            </MenuPopover>
 
             <IconStatus status={node._sync_status} />
             {/* <input type="button" value="Test" onClick={this.handleTestRunner} /> */}
@@ -159,6 +158,8 @@ class NoteItemNoConnect extends Component {
     );
   }
 }
+
+const MenuPopover = createPopover(NodeItemMenu);
 
 const mapDispatchToProps = dispatch => {
   return { selectToWindow: async _id => dispatch(await readThisNode(_id)) };
