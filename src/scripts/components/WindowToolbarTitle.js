@@ -21,17 +21,24 @@ class WindowToolbarTitleNoConnect extends Component {
     }
   }
 
-  handleChange(event) {
-    const value = event.target.value || '';
-    this.setState({ name: value });
-    event.preventDefault();
+  handleChange(e) {
+    e.preventDefault();
+    const value = e.target.value || '';
+    if (value !== this.props.name) {
+      this.setState({ name: value });
+    }
   }
 
-  handleBlur(event) {
+  handleBlur(e) {
     const { _id } = this.props;
 
     // Prevent sending data without node selected.
     if (!_id || !this.state.name) {
+      return null;
+    }
+
+    // Prevent sending if same value
+    if (this.props.name === this.state.name) {
       return null;
     }
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { push } from '../services/sync/sync';
-import DebouncedTextarea from './DebouncedTextarea';
+import TextareaDebounced from './TextareaDebounced';
 import { getLocalNodeById } from '../services/db/db.local';
 
 class TextareaNoConnect extends Component {
@@ -52,11 +52,11 @@ class TextareaNoConnect extends Component {
     return (
       <div className="node-edit">
         {_id && (
-          <DebouncedTextarea
+          <TextareaDebounced
             value={this.state.defaultValue}
             targetId={_id}
             onChange={this.sendContentChange}
-            time={200}
+            time={500}
           />
         )}
       </div>

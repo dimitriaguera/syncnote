@@ -37,7 +37,13 @@ class NodeListNoConnect extends Component {
     return (
       <div className="list">
         {rows.map(node => (
-          <NodeItem key={node._id} node={node} level={node.level} />
+          <NodeItem
+            key={node._id}
+            level={node.level}
+            name={node.name}
+            _id={node._id}
+            _sync_status={node._sync_status}
+          />
         ))}
       </div>
     );

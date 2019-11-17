@@ -27,6 +27,7 @@ class LoginNoConnect extends Component {
   async handleSubmit(event) {
     const { password, username } = this.state;
     try {
+      console.log('yo');
       this.props.loginHandler(password, username);
     } catch (err) {
       console.log('From Component: ', err);
@@ -52,7 +53,7 @@ class LoginNoConnect extends Component {
             Password:
             <input
               name="password"
-              type="text"
+              type="password"
               value={this.state.password}
               onChange={this.handleInputChange}
             />

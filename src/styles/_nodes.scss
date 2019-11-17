@@ -1,18 +1,31 @@
 .node-item {
   position: relative;
-  padding: 5px 5px 5px 5px;
+  padding: 0 5px;
 
   .node-item-inner {
     position: relative;
   }
 
-  .name {
+  .name,
+  .edit {
+    width: 100%;
+    padding: 3px 40px 3px 10px;
+    line-height: 1.6;
     background: none;
     border: none;
+    text-align: left;
+  }
 
+  .name {
     i {
       margin-right: 5px;
     }
+  }
+
+  .menu {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 
   &:hover {
@@ -29,13 +42,42 @@
     background: rgba(0, 0, 0, 0);
     border: none;
   }
+}
 
-  .node-item-menu-box {
-    position: absolute;
-    top: 20px;
-    background: red;
-    padding: 5px;
-    z-index: 2;
+.node-item-menu-box {
+  position: absolute;
+  width: 200px;
+  background-color: #fff;
+  z-index: 2;
+  border-radius: 3px;
+  padding: 5px 0;
+  box-shadow: $basic-shadow;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      button {
+        position: relative;
+        width: 100%;
+        padding: 5px 15px 5px 30px;
+        background: none;
+        border: none;
+        text-align: left;
+
+        &:hover {
+          background: $color-node-item-hover;
+        }
+
+        // i {
+        //   position: absolute;
+        //   top: 6px;
+        //   left: 6px;
+        // }
+      }
+    }
   }
 }
 

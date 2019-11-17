@@ -10,8 +10,13 @@
 .main-navigation {
   position: relative;
   flex-shrink: 0;
+  top: 0;
+  left: 0;
   width: 300px;
   min-height: 1px;
+  height: 100%;
+  font-size: 14px;
+  overflow: auto;
   z-index: 2;
 }
 

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
 import { popoverContainer } from './Popover';
 import Login from './Login';
 import Main from './Main';
@@ -7,20 +7,24 @@ import Alert from './Alert';
 import Header from './Header';
 import '../../App.scss';
 
-class App extends Component {
-  render() {
-    console.log('RENDER APP');
-    return (
-      <div className="App">
-        <Header />
-        <main>
-          <Route exact path="/" component={Main} />
-          <Route path="/login" component={Login} />
-        </main>
-        <Alert />
-      </div>
-    );
-  }
-}
+const App = () => {
+  console.log('RENDER APP');
+  return (
+    <div className="App">
+      <Header />
+      <main>
+        <Switch>
+          <Route exact path="/">
+            <Main />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+        </Switch>
+      </main>
+      <Alert />
+    </div>
+  );
+};
 
 export default popoverContainer(App);

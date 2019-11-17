@@ -106,6 +106,7 @@ export const push = async _action => {
 
 async function prepareNodeToLocalPush(_action) {
   const { type, data } = _action;
+  let localNode = null;
   let localDbAction = null;
   let node = null;
   let conflictFlag = false;
@@ -116,7 +117,7 @@ async function prepareNodeToLocalPush(_action) {
       localDbAction = putNodeToLocalDb.bind(null, node);
       break;
     case 'update':
-      const localNode = await getLocalNodeById(_action.data._id);
+      localNode = await getLocalNodeById(_action.data._id);
       console.log('local update node', localNode);
       if (localNode._sync_conflict) {
         conflictFlag = true;
@@ -128,7 +129,8 @@ async function prepareNodeToLocalPush(_action) {
       break;
     case 'remove':
       // @TODO Gerer les conflicts !!!
-      node = prepareLocalNodeBeforeDeletePush(data);
+      localNode = await getLocalNodeById(_action.data._id);
+      node = prepareLocalNodeBeforeDeletePush(localNode);
       localDbAction = updateNodeToLocalDb.bind(null, node._id, node);
       break;
     default:

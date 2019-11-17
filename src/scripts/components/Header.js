@@ -6,6 +6,7 @@ import { logout, mode_online, mode_offline } from '../redux/actions';
 class HeaderNoConnect extends Component {
   render() {
     const { user, loggedIn } = this.props.auth;
+    console.log('RENDER HEADER');
     return (
       <header className="header">
         <nav>

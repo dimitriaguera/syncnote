@@ -1,24 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import NodeAdd from './NodeAdd';
 import NodeList from './NodeList';
 import Window from './Window';
 
-class List extends Component {
-  render() {
-    return (
-      <div className="main">
-        <div className="main-navigation">
-          <div className="toolbar navigation-header">
-            <NodeAdd />
-          </div>
-          <NodeList />
+const Main = React.memo(() => {
+  console.log('RENDER MAIN');
+  return (
+    <div className="main">
+      <div className="main-navigation">
+        <div className="toolbar navigation-header">
+          <NodeAdd />
         </div>
-        <div className="main-window">
-          <Window />
-        </div>
+        <NodeList />
       </div>
-    );
-  }
-}
+      <div className="main-window">
+        <Window />
+      </div>
+    </div>
+  );
+});
 
-export default List;
+export default Main;

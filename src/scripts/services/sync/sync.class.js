@@ -182,7 +182,7 @@ class LocalSync {
   }
 
   update(node) {
-    this.func = updateNodeToLocalDb.bind(
+    this.func = putNodeToLocalDb.bind(
       null,
       node._id,
       prepareSyncedLocalNodeToUpdate(node)
