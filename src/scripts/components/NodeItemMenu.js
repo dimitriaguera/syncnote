@@ -2,7 +2,7 @@ import React from 'react';
 import Icon from './Icon';
 
 const NodeItemMenu = React.memo(
-  ({ onClickEdit, onClickAdd, onClickRemove, onClickShare }) => {
+  ({ onClickEdit, onClickAdd, onClickRemove, onClickShare, onClickShare3 }) => {
     return (
       <div className="node-item-menu-box">
         <ul>
@@ -27,7 +27,13 @@ const NodeItemMenu = React.memo(
           <li>
             <button onClick={onClickShare}>
               <Icon name="share" />
-              partager
+              partager user 2
+            </button>
+          </li>
+          <li>
+            <button onClick={onClickShare3}>
+              <Icon name="share" />
+              partager user 3
             </button>
           </li>
         </ul>

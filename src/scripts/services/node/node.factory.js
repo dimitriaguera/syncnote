@@ -79,6 +79,14 @@ export const prepareLocalNodeBeforeUpdatePush = (update, localNode) => {
 };
 
 // Format local node before sync transaction.
+export const prepareLocalNodeBeforeShare = share => {
+  return {
+    _id: share._id,
+    shared: share.shared
+  };
+};
+
+// Format local node before sync transaction.
 export const prepareLocalNodeBeforeDeletePush = localNode => {
   const tId = uuidv1();
   return Object.assign(
@@ -112,11 +120,16 @@ export const prepareSyncedLocalNodeToRefresh = remoteNode => {
 
 // Format local node after received from sync stream
 export const prepareSyncedLocalNodeToUpdate = remoteNode => {
-  //console.log("REMOTE NODE");
   return Object.assign({}, remoteNode, {
     _sync_status: SYNC_STATUS_DONE,
     _sync_wait: SYNC_WAIT_OK
   });
+};
+
+// Format local node after received from share stream
+// Important to preserve node status
+export const prepareSyncedLocalNodeToShare = remoteNode => {
+  return Object.assign({}, remoteNode);
 };
 
 // Format local node after received from sync stream

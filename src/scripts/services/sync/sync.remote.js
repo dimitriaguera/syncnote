@@ -100,6 +100,10 @@ class RemoteInterface {
     socket.emit('sync', data, callback);
   }
 
+  share(data, callback) {
+    socket.emit('share', data, callback);
+  }
+
   push(data, callback) {
     this.queue.add(data, callback);
   }

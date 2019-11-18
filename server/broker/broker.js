@@ -25,14 +25,24 @@ module.exports = {
     return USERS_NODES_CONCERN[nId] || [];
   },
 
-  update: (nId, updates) => {
-    if (updates.shared || updates.owner) {
-      const cuIds = updateConcernedUsersIds(_.cloneDeep(updates));
-      USERS_NODES_CONCERN[nId] = cuIds;
-      console.log('UPDATE BROKER : ', USERS_NODES_CONCERN);
-      return cuIds;
-    }
-    return null;
+  update: (nId, updates, owner) => {
+    const oldCuIds = USERS_NODES_CONCERN[nId] || [];
+
+    const cuIds = updateConcernedUsersIds({
+      shared: updates.shared,
+      owner: owner
+    });
+
+    const filtered_cuids = {
+      removed_cuids: _.difference(oldCuIds, cuIds),
+      added_cuids: _.difference(cuIds, oldCuIds),
+      updated_cuids: _.intersection(oldCuIds, cuIds)
+    };
+
+    USERS_NODES_CONCERN[nId] = cuIds;
+    console.log('UPDATE BROKER : ', USERS_NODES_CONCERN, filtered_cuids);
+
+    return filtered_cuids;
   },
 
   store: node => {
@@ -55,8 +65,8 @@ module.exports = {
 };
 
 function updateConcernedUsersIds(updates) {
-  const cuIds = updates.shared || [];
-  if (updates.owner) {
+  const cuIds = [...updates.shared] || [];
+  if (updates.owner && cuIds.indexOf(updates.owner) === -1) {
     cuIds.push(updates.owner);
   }
   return cuIds;

@@ -4,6 +4,8 @@ const chalk = require('chalk');
 const http = require('http');
 const { addUserMiddleware, unregisterUser } = require('./manager');
 const { registerToSync } = require('../sync/sync.controller');
+const { registerToShare } = require('../share/share.controller');
+
 const { registerToNodesStream } = require('../sync/sync.stream');
 
 module.exports = function(app) {
@@ -27,6 +29,7 @@ module.exports = function(app) {
 function eventRegistration(socket) {
   // Rooms registration.
   registerToSync(socket);
+  registerToShare(socket);
 
   // Socket connexion.
   console.log(

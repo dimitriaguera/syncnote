@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { readThisNode } from '../redux/actions';
-import { push } from '../services/sync/sync';
+import { push, share } from '../services/sync/sync';
 import NodeItemMenu from './NodeItemMenu';
 import IconStatus from './IconStatus';
 import Icon from './Icon';
@@ -23,6 +23,7 @@ class NoteItemNoConnect extends PureComponent {
     this.handleAdd = this.handleAdd.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.handleShare = this.handleShare.bind(this);
+    this.handleShare3 = this.handleShare3.bind(this);
     //this.handleTestRunner = this.handleTestRunner.bind(this);
 
     this.input = React.createRef();
@@ -117,12 +118,23 @@ class NoteItemNoConnect extends PureComponent {
   handleShare(e) {
     e.preventDefault();
 
-    const _action = {
-      type: 'update',
-      data: { _id: this.props._id, shared: ['user2'] }
+    const _share = {
+      _id: this.props._id,
+      shared: ['user2']
     };
 
-    push(_action);
+    share(_share);
+  }
+
+  handleShare3(e) {
+    e.preventDefault();
+
+    const _share = {
+      _id: this.props._id,
+      shared: ['user3']
+    };
+
+    share(_share);
   }
 
   render() {
@@ -168,6 +180,7 @@ class NoteItemNoConnect extends PureComponent {
               onClickAdd={this.handleAdd}
               onClickRemove={this.handleRemove}
               onClickShare={this.handleShare}
+              onClickShare3={this.handleShare3}
             />
 
             <IconStatus status={_sync_status} />

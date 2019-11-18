@@ -7,7 +7,8 @@ module.exports = {
   init,
   nodeMerge,
   nodeFactory,
-  preparNodeToUpdate
+  preparNodeToUpdate,
+  preparNodeToShare
 };
 
 function init() {
@@ -67,8 +68,8 @@ function nodeMerge(old, update) {
 }
 
 function preparNodeToUpdate(update) {
-  if (!update._id || _.isEmpty(update)) {
-    const err = new Error('Nothing to update or no node Id.');
+  if (!update._id || !update._tId || _.isEmpty(update)) {
+    const err = new Error('Nothing to update or no node Id or no node tId.');
     err.statusCode = 400;
     throw err;
   }
@@ -84,6 +85,28 @@ function preparNodeToUpdate(update) {
   });
 
   console.log(chalk.yellow('PREPARED NODE TO UPDATE : '));
+  console.log(_node);
+  console.log(chalk.yellow('------------------------------'));
+
+  return _node;
+}
+
+function preparNodeToShare(share, node) {
+  if (!share._id || _.isEmpty(share)) {
+    const err = new Error('Nothing to share or no node Id.');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const _shared = share.shared.filter(uid => {
+    return uid !== node.owner;
+  });
+
+  const _node = {
+    shared: _shared
+  };
+
+  console.log(chalk.yellow('PREPARED NODE TO SHARE : '));
   console.log(_node);
   console.log(chalk.yellow('------------------------------'));
 

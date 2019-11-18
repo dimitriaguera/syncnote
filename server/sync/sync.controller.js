@@ -164,6 +164,12 @@ async function compareForSync(remoteNodes, localNodes) {
     // Remove local node from obj.
     delete local[remoteNode._id];
 
+    // Remove shared and owner propery
+    // user must not directly update shared propery in sync/push way
+    // CRUD shared or owner property is handle in other logic
+    delete localNodes.shared;
+    delete localNodes.owner;
+
     // If no change in _rev id.
     if (remoteNode._rev === localNode._rev) {
       switch (localNode._sync_wait) {

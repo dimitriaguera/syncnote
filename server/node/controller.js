@@ -70,7 +70,7 @@ async function updateNodeById(id, update) {
   return await mongodb
     .getDb()
     .collection('node')
-    .updateOne({ _id: id }, update, { upsert: false });
+    .updateOne({ _id: id }, { $set: update }, { upsert: false });
 }
 
 async function deleteNodeById(nodeId) {

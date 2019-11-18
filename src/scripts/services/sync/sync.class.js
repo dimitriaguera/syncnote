@@ -17,6 +17,7 @@ import {
   prepareSyncedLocalNodeToRemove,
   prepareSyncedLocalNodeToOk,
   prepareSyncedLocalNodeToConflict,
+  prepareSyncedLocalNodeToShare,
   prepareNodesToSync,
   isLastTransaction,
   isOwnerOfThisTransaction
@@ -113,6 +114,36 @@ class LocalSyncBulk {
   }
 }
 
+class LocalShare {
+  async handleRemoteStream(streamData = {}) {
+    try {
+      switch (streamData.type) {
+        case 'add':
+          putNodeToLocalDb(prepareSyncedLocalNodeToAdd(streamData.node));
+          break;
+
+        case 'remove':
+          deleteNodeToLocalDb(streamData.node._id);
+          break;
+
+        case 'update':
+          updateNodeToLocalDb(
+            streamData.node._id,
+            prepareSyncedLocalNodeToShare(streamData.node)
+          );
+          break;
+
+        default:
+          break;
+      }
+    } catch (err) {
+      throw new Error(
+        `Sharing error. Error on handling sharing remote stream. ${err}`
+      );
+    }
+  }
+}
+
 class LocalSync {
   constructor() {
     this.type = null;
@@ -182,7 +213,7 @@ class LocalSync {
   }
 
   update(node) {
-    this.func = putNodeToLocalDb.bind(
+    this.func = updateNodeToLocalDb.bind(
       null,
       node._id,
       prepareSyncedLocalNodeToUpdate(node)
@@ -212,7 +243,6 @@ class LocalSync {
   }
 
   conflict(conflictObject) {
-    console.log('before db update conflict object', conflictObject);
     this.func = updateNodeToLocalDb.bind(
       null,
       conflictObject._id,
@@ -301,10 +331,11 @@ async function checkConflict(_id, node, type) {
   // Get local node.
   const localNode = await getLocalNodeById(_id);
 
-  // If no local node, add it.
+  // If no local node for remote asking create/update
+  // need to ensure that node has same remote _id
   if (!localNode) {
     console.log('============= check-conflict : NO CONFLICT 1');
-    _action.add(node);
+    _action.add({ _id, ...node });
     return _action;
   }
 
@@ -351,4 +382,4 @@ async function checkConflict(_id, node, type) {
   return _action;
 }
 
-export { LocalSyncBulk, LocalSync };
+export { LocalSyncBulk, LocalSync, LocalShare };
