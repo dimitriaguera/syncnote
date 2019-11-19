@@ -11,17 +11,23 @@ import {
 } from '../../globals/_sync_status';
 
 // Create local node model.
-export const buildNode = (name, shared = [], parent = '', content = null) => {
+export const buildNode = (
+  name,
+  parent = '',
+  created = new Date(),
+  content = null
+) => {
   return {
     _id: uuidv1(),
     _tId: uuidv1(),
+    _sync_wait: SYNC_WAIT_CREA,
+    _sync_status: SYNC_STATUS_PENDING,
     owner: getLocalUser()._id,
     parent: parent,
     name: name,
     content: content,
-    shared: shared,
-    _sync_wait: SYNC_WAIT_CREA,
-    _sync_status: SYNC_STATUS_PENDING
+    created: created,
+    shared: []
   };
 };
 
@@ -49,6 +55,7 @@ export const prepareLocalNodeBeforeCreatePush = localNode => {
     parent: parent,
     content: content,
     name: name,
+    created: new Date(),
     shared: shared
   });
 };
@@ -61,7 +68,8 @@ export const prepareLocalNodeBeforeConflictPush = (update, localNode) => {
     _tId: tId,
     _sync_wait: localNode._sync_wait,
     _sync_status: localNode._sync_status,
-    _sync_conflict: localNode._sync_conflict
+    _sync_conflict: localNode._sync_conflict,
+    updated: new Date()
   });
 };
 
@@ -74,7 +82,8 @@ export const prepareLocalNodeBeforeUpdatePush = (update, localNode) => {
     _tId: tId,
     _rev: localNode._rev,
     _sync_wait: SYNC_WAIT_UPT,
-    _sync_status: SYNC_STATUS_PENDING
+    _sync_status: SYNC_STATUS_PENDING,
+    updated: new Date()
   });
 };
 

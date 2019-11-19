@@ -1,6 +1,7 @@
 .node-item {
   position: relative;
-  padding: 0 5px;
+  padding: 10px 5px;
+  border-bottom: 1px solid $color-grey;
 
   .node-item-inner {
     position: relative;
@@ -9,7 +10,7 @@
   .name,
   .edit {
     width: 100%;
-    padding: 3px 40px 3px 10px;
+    padding: 3px 40px 3px 20px;
     line-height: 1.6;
     background: none;
     border: none;
@@ -31,6 +32,15 @@
   &:hover {
     background-color: $color-node-item-hover;
   }
+
+  .node-item-icon-infos {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: $status-icon-size;
+  }
 }
 
 .node-item-menu {
@@ -42,6 +52,11 @@
     background: rgba(0, 0, 0, 0);
     border: none;
   }
+}
+
+.node-item-date {
+  font-size: 12px;
+  color: $color-grey;
 }
 
 .node-item-menu-box {
@@ -79,13 +94,6 @@
       }
     }
   }
-}
-
-.component-icon-status {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-size: $status-icon-size;
 }
 
 .node-status-0 {

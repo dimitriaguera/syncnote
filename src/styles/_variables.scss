@@ -1,9 +1,11 @@
 $color-font: #333;
 $color-link: #61dafb;
 
+$color-grey: #b5b5b5;
 $color-node-item-hover: #f1f1f1;
 $color-edit-border: #d1d1d1;
 $color-nav-border: #d1d1d1;
+$color-separation: $color-grey;
 
 $color-status-ok: rgb(61, 165, 78);
 $color-status-waiting: #66bce5;
@@ -13,5 +15,6 @@ $color-status-error: #ff6363;
 $basic-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.3);
 
 $status-icon-size: 12px;
-$toolbar-base-height: 60px;
-$read-zone-width: 1000px;
+$toolbar-base-height: 40px;
+$read-zone-width: 100%;
+$navbar-with: 300px;

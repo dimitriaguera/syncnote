@@ -26,22 +26,30 @@ module.exports = {
   },
 
   update: (nId, updates, owner) => {
+    // Get cuids before update
     const oldCuIds = USERS_NODES_CONCERN[nId] || [];
 
+    // Build cuids after update
     const cuIds = updateConcernedUsersIds({
       shared: updates.shared,
       owner: owner
     });
 
+    // Get diffs between before and after update
     const filtered_cuids = {
       removed_cuids: _.difference(oldCuIds, cuIds),
       added_cuids: _.difference(cuIds, oldCuIds),
       updated_cuids: _.intersection(oldCuIds, cuIds)
     };
 
+    // Store new cuids
     USERS_NODES_CONCERN[nId] = cuIds;
     console.log('UPDATE BROKER : ', USERS_NODES_CONCERN, filtered_cuids);
 
+    // Return diff info
+    // Those info are needed to broadcast CRUD actions to connected users
+    // For example, if user is no longuer in shared list of the node after updtae,
+    // we need to broadcast a delete action
     return filtered_cuids;
   },
 

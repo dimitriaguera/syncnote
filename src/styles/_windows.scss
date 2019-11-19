@@ -5,13 +5,45 @@
   height: 100%;
   overflow: hidden;
 
+  .window-inner {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .window-toolbar {
+    display: flex;
+    position: fixed;
+    flex: 0 0 100%;
+    max-width: 100%;
+    align-items: center;
+    width: 100%;
+    height: $toolbar-base-height;
+    padding: 0;
+    border-bottom: 1px solid $color-separation;
+    z-index: 2;
+
+    & > * {
+      display: inline-block;
+    }
+  }
+
+  .window-toolbar ~ .window-inner {
+    padding-top: $toolbar-base-height;
+  }
+
   .window-edit,
   .window-read {
-    height: calc(100% - #{$toolbar-base-height});
+    height: 100%;
     width: 100%;
     max-width: $read-zone-width;
     margin: 0;
     overflow: auto;
+  }
+
+  .window-read {
+    padding: 15px;
   }
 
   .window-edit {
@@ -35,6 +67,19 @@
   }
 
   &.mode-edit-read {
+    &:after {
+      content: '';
+      position: absolute;
+      display: block;
+      width: 4px;
+      height: calc(100% - #{$toolbar-base-height});
+      top: $toolbar-base-height;
+      left: calc(50% - 2px);
+      background-color: $color-node-item-hover;
+      border-left: 1px solid $color-edit-border;
+      border-right: 1px solid $color-edit-border;
+    }
+
     .window-edit,
     .window-read {
       position: relative;

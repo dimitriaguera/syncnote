@@ -17,7 +17,6 @@ import {
   prepareSyncedLocalNodeToRemove,
   prepareSyncedLocalNodeToOk,
   prepareSyncedLocalNodeToConflict,
-  prepareSyncedLocalNodeToShare,
   prepareNodesToSync,
   isLastTransaction,
   isOwnerOfThisTransaction
@@ -109,38 +108,13 @@ class LocalSyncBulk {
     this.queue.ok.push(prepareSyncedLocalNodeToOk(node));
   }
 
+  refresh(node) {
+    //this.queue.refresh(prepareSyncedLocalNodeToRefresh(node));
+    console.log('refresh after sync: ', node);
+  }
+
   conflict(conflictObject) {
     this.queue.conflict.push(prepareSyncedLocalNodeToConflict(conflictObject));
-  }
-}
-
-class LocalShare {
-  async handleRemoteStream(streamData = {}) {
-    try {
-      switch (streamData.type) {
-        case 'add':
-          putNodeToLocalDb(prepareSyncedLocalNodeToAdd(streamData.node));
-          break;
-
-        case 'remove':
-          deleteNodeToLocalDb(streamData.node._id);
-          break;
-
-        case 'update':
-          updateNodeToLocalDb(
-            streamData.node._id,
-            prepareSyncedLocalNodeToShare(streamData.node)
-          );
-          break;
-
-        default:
-          break;
-      }
-    } catch (err) {
-      throw new Error(
-        `Sharing error. Error on handling sharing remote stream. ${err}`
-      );
-    }
   }
 }
 
@@ -382,4 +356,4 @@ async function checkConflict(_id, node, type) {
   return _action;
 }
 
-export { LocalSyncBulk, LocalSync, LocalShare };
+export { LocalSyncBulk, LocalSync };

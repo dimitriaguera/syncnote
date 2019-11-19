@@ -18,7 +18,7 @@ function init() {
 }
 
 function nodeFactory(data, user) {
-  const { _id, _tId, name, parent, content, shared } = data;
+  const { _id, _tId, name, parent, content, shared, created, updated } = data;
 
   if (!name) {
     const err = new Error('You must give a name.');
@@ -40,7 +40,9 @@ function nodeFactory(data, user) {
     owner: user._id,
     parent: parent || null,
     content: content || null,
-    shared: shared || []
+    shared: shared || [],
+    created: created || new Date(),
+    updated: updated || null
   };
 }
 
@@ -68,21 +70,28 @@ function nodeMerge(old, update) {
 }
 
 function preparNodeToUpdate(update) {
+  // Check basic info
   if (!update._id || !update._tId || _.isEmpty(update)) {
     const err = new Error('Nothing to update or no node Id or no node tId.');
     err.statusCode = 400;
     throw err;
   }
 
+  // Remove client info
   delete update._sync_status;
   delete update._sync_wait;
-  //delete update.children;
 
+  // Add needed info
   const _node = Object.assign(update, {
     _id: update._id,
     _tId: update._tId,
     _rev: uuidv1()
   });
+
+  // Add date info if needed
+  if (!_node.updated) {
+    _node.updated = new Date();
+  }
 
   console.log(chalk.yellow('PREPARED NODE TO UPDATE : '));
   console.log(_node);
@@ -92,23 +101,26 @@ function preparNodeToUpdate(update) {
 }
 
 function preparNodeToShare(share, node) {
+  // Check basic info
   if (!share._id || _.isEmpty(share)) {
     const err = new Error('Nothing to share or no node Id.');
     err.statusCode = 400;
     throw err;
   }
 
+  // Ensure owner uid is not in shared array
   const _shared = share.shared.filter(uid => {
     return uid !== node.owner;
   });
 
-  const _node = {
+  // Build update info
+  const _update = {
     shared: _shared
   };
 
   console.log(chalk.yellow('PREPARED NODE TO SHARE : '));
-  console.log(_node);
+  console.log(_update);
   console.log(chalk.yellow('------------------------------'));
 
-  return _node;
+  return _update;
 }

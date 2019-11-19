@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
-class AlertNoConnect extends Component {
+class AlertNoConnect extends PureComponent {
   render() {
     const { type, message } = this.props.alert;
-    return (
+
+    return type ? (
       <div className={`alert alert-${type}`}>
         <p>{JSON.stringify(message)}</p>
       </div>
-    );
+    ) : null;
   }
 }
 

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export { objectToTree };
+export { objectToTree, formatDate };
 
 // Thank you
 // https://github.com/philipstanislaus/performant-array-to-tree/blob/master/src/arrayToTree.ts
@@ -39,4 +39,29 @@ function objectToTree(
   });
 
   return tree;
+}
+
+function formatDate(date) {
+  // var monthNames = [
+  //   'Janvier',
+  //   'Février',
+  //   'Mars',
+  //   'Avril',
+  //   'Mai',
+  //   'Juin',
+  //   'Juillet',
+  //   'Août',
+  //   'Septembre',
+  //   'Octobre',
+  //   'Novembre',
+  //   'Décembre'
+  // ];
+
+  var d = date.getDate();
+  var m = date.getMonth();
+  var y = date.getFullYear();
+
+  // return d + ' ' + monthNames[m] + ' ' + y;
+
+  return `${d}.${m + 1}.${y}`;
 }

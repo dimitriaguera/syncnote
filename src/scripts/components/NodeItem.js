@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { readThisNode } from '../redux/actions';
-import { push, share } from '../services/sync/sync';
+import { push } from '../services/sync/sync';
+import { share } from '../services/share/share';
 import NodeItemMenu from './NodeItemMenu';
+import NodeInfos from './NodeInfos';
 import IconStatus from './IconStatus';
 import Icon from './Icon';
 import createPopover from './Popover';
@@ -138,7 +140,7 @@ class NoteItemNoConnect extends PureComponent {
   }
 
   render() {
-    const { _sync_status, level, name } = this.props;
+    const { _sync_status, level, owner, shared, name } = this.props;
     const { edit, value } = this.state;
 
     const classes = [`node-status-${_sync_status}`];
@@ -154,7 +156,7 @@ class NoteItemNoConnect extends PureComponent {
           <div className="node-item-inner">
             {edit ? (
               <div className="edit">
-                <Icon name="file-text" />
+                {/* <Icon name="file-text" /> */}
                 <input
                   type="text"
                   value={value}
@@ -165,8 +167,10 @@ class NoteItemNoConnect extends PureComponent {
               </div>
             ) : (
               <button className="name" onClick={this.handleSelect}>
-                <Icon name="file-text" />
-                {name}
+                <div>
+                  {/* <Icon name="file-text" /> */}
+                  {name}
+                </div>
               </button>
             )}
 
@@ -183,7 +187,10 @@ class NoteItemNoConnect extends PureComponent {
               onClickShare3={this.handleShare3}
             />
 
-            <IconStatus status={_sync_status} />
+            <span className="node-item-icon-infos">
+              <IconStatus status={_sync_status} />
+              <NodeInfos owner={owner} shared={shared} />
+            </span>
             {/* <input type="button" value="Test" onClick={this.handleTestRunner} /> */}
           </div>
         </div>

@@ -13,14 +13,16 @@ const App = () => {
     <div className="App">
       <Header />
       <main>
-        <Switch>
-          <Route exact path="/">
-            <Main />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-        </Switch>
+        <div class="main">
+          <Switch>
+            <Route exact path="/">
+              <Main />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+          </Switch>
+        </div>
       </main>
       <Alert />
     </div>

@@ -12,16 +12,18 @@ class WindowNoConnect extends Component {
     return (
       <div className={classes}>
         {_id && <WindowToolbar />}
-        {_id && (mode === 'edit' || mode === 'edit-read') && (
-          <div className="window-edit">
-            <Textarea />
-          </div>
-        )}
-        {_id && (mode === 'read' || mode === 'edit-read') && (
-          <div className="window-read">
-            <Read />
-          </div>
-        )}
+        <div className="window-inner">
+          {_id && (mode === 'edit' || mode === 'edit-read') && (
+            <div className="window-edit">
+              <Textarea />
+            </div>
+          )}
+          {_id && (mode === 'read' || mode === 'edit-read') && (
+            <div className="window-read">
+              <Read />
+            </div>
+          )}
+        </div>
       </div>
     );
   }

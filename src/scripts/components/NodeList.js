@@ -40,6 +40,8 @@ class NodeListNoConnect extends Component {
           <NodeItem
             key={node._id}
             level={node.level}
+            owner={node.owner}
+            shared={node.shared}
             name={node.name}
             _id={node._id}
             _sync_status={node._sync_status}

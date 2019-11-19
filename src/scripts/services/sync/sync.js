@@ -1,4 +1,4 @@
-import { LocalSyncBulk, LocalSync, LocalShare } from './sync.class';
+import { LocalSyncBulk, LocalSync } from './sync.class';
 import {
   populateLocalDb,
   putNodeToLocalDb,
@@ -12,7 +12,6 @@ import {
   prepareLocalNodeBeforeUpdatePush,
   prepareLocalNodeBeforeDeletePush,
   prepareLocalNodeBeforeConflictPush,
-  prepareLocalNodeBeforeShare,
   prepareSyncedLocalNodeToConflict
 } from '../node/node.factory';
 import { SYNC_WAIT_OK, SYNC_STATUS_DONE } from '../../globals/_sync_status';
@@ -27,9 +26,6 @@ remoteInterface.eventRegister(socket => {
   socket.eventRegister('sync_ok', syncOkHandler);
   socket.eventRegister('sync_errors', syncErrorsHandler);
   socket.eventRegister('sync_change', syncChange);
-  socket.eventRegister('share_change', shareChange);
-  socket.eventRegister('share_ok', shareOkHandler);
-  socket.eventRegister('share_errors', shareErrorsHandler);
 });
 
 // register running function
@@ -110,19 +106,6 @@ export const push = async _action => {
   }
 };
 
-// Push new data to remoteDB.
-export const share = async _share => {
-  try {
-    const share = prepareLocalNodeBeforeShare(_share);
-    remoteInterface.share(share, resp => {
-      console.log('resp after share: ', resp);
-      handleRemoteResponse(resp);
-    });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 async function prepareNodeToLocalPush(_action) {
   const { type, data } = _action;
   let localNode = null;
@@ -193,23 +176,6 @@ async function syncChange(data) {
 
   const sync = new LocalSync();
   await sync.handleRemoteStream(data);
-}
-
-function shareOkHandler(data) {}
-
-// Handler listening socket blabla.
-function shareErrorsHandler(data) {
-  console.log('from remote after share is ERROR: ', data);
-}
-
-async function shareChange(data) {
-  // @TODO TO REMOVE !!!
-  // Simulate offline mode.
-  // If offline mode, abord.
-  if (isOffline()) return;
-
-  const share = new LocalShare();
-  await share.handleRemoteStream(data);
 }
 
 function handleRemoteResponse(_actions) {
