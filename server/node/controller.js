@@ -5,6 +5,7 @@ module.exports = {
   routerGetAllUserNode,
   routerPost,
   routerPut,
+  routerGet,
   routerDeleteNode,
   getNodeById,
   getAllNodes,
@@ -13,6 +14,12 @@ module.exports = {
   updateNodeById,
   deleteNodeById
 };
+
+function routerGet(req, res) {
+  console.log('YOUOUOU111111111111');
+  const node = req._currentNode;
+  res.json({ success: true, data: node });
+}
 
 async function routerPost(req, res) {
   const _node = nodeFactory(req.body, req.user);

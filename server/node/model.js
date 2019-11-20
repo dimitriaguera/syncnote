@@ -8,7 +8,9 @@ module.exports = {
   nodeMerge,
   nodeFactory,
   preparNodeToUpdate,
-  preparNodeToShare
+  preparNodeToShare,
+  isNodeOwner,
+  isNodeShared
 };
 
 function init() {
@@ -123,4 +125,18 @@ function preparNodeToShare(share, node) {
   console.log(chalk.yellow('------------------------------'));
 
   return _update;
+}
+
+function isNodeOwner(uid, node) {
+  if (!uid || !node) {
+    return false;
+  }
+  return uid === node.owner;
+}
+
+function isNodeShared(uid, node) {
+  if (!uid || !node || !node.shared) {
+    return false;
+  }
+  return node.shared.indexOf(uid) !== -1;
 }
