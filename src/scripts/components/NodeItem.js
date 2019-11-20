@@ -140,7 +140,7 @@ class NoteItemNoConnect extends PureComponent {
   }
 
   render() {
-    const { _sync_status, level, owner, shared, name } = this.props;
+    const { _sync_status, level, owner, shared, name, _id } = this.props;
     const { edit, value } = this.state;
 
     const classes = [`node-status-${_sync_status}`];
@@ -156,7 +156,7 @@ class NoteItemNoConnect extends PureComponent {
           <div className="node-item-inner">
             {edit ? (
               <div className="edit">
-                {/* <Icon name="file-text" /> */}
+                */}
                 <input
                   type="text"
                   value={value}
@@ -180,6 +180,7 @@ class NoteItemNoConnect extends PureComponent {
                   <Icon name="more-vertical" />
                 </button>
               }
+              nid={_id}
               onClickEdit={this.handleToggleMode}
               onClickAdd={this.handleAdd}
               onClickRemove={this.handleRemove}

@@ -15,7 +15,7 @@ class HeaderNoConnect extends Component {
             <NodeToolbar />
           </div>
           <div className="header-right">
-            <div clasName="header-nav">
+            <div className="header-nav">
               {/* <span className="icon-activity"></span>
           <button onClick={this.props.setOnline}>Connect</button>
           <button onClick={this.props.setOffline}>Disconnect</button>

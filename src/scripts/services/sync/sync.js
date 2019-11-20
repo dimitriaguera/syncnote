@@ -66,7 +66,7 @@ queue.setOnRun(async _action => {
 // This function is called during login phase.
 // LocalDB nodes collection need to already be empty.
 export const populateLocalDbFromRemote = async user => {
-  const { data } = await get(`/node/${user._id}`);
+  const { data } = await get(`/node/all/${user._id}`);
   const result = await populateLocalDb(data, {
     _sync_wait: SYNC_WAIT_OK,
     _sync_status: SYNC_STATUS_DONE

@@ -38,7 +38,7 @@ function objectToTree(
     }
   });
 
-  return tree;
+  return tree.sort((a, b) => b - a);
 }
 
 function formatDate(date) {
