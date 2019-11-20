@@ -1,34 +1,23 @@
 const passport = require('passport');
 const { asyncMiddleware } = require('../utils/tools');
-const { authByUserId } = require('../auth/authorization');
 const { isNodeOwner, isNodeShared } = require('./model');
 
 module.exports = function(app) {
   const node = require('./controller');
 
+  // Here user must be authenticated
   app.route('/api/node*').all(passport.authenticate('jwt', { session: false }));
-  // app.route('/api/node').post(asyncMiddleware(node.routerPost));
 
+  // Get all user nodes
   app
     .route('/api/node/all/:uid')
-    .get(authByUserId, asyncMiddleware(node.routerGetAllUserNode));
+    .get(asyncMiddleware(node.routerGetAllUserNode));
 
-  // app
-  //   .route('/api/node/:nid')
-  //   .get(asyncMiddleware(node.routerGet))
-  //   .put(asyncMiddleware(node.routerPut));
-
-  // app
-  //   .route('/api/node/delete/:nid_delete')
-  //   .delete(asyncMiddleware(node.routerDeleteNode));
-
+  // Get one node
   app.route('/api/node/:nid').get(node.routerGet);
 
-  app.param('uid', function(req, res, next, id) {
-    req._userId = id;
-    next();
-  });
-
+  // Attach node to req
+  // Check authorization access to node
   app.param('nid', async function(req, res, next, id) {
     try {
       // Get node
@@ -36,7 +25,7 @@ module.exports = function(app) {
       // If no node found, res 404
       if (!nodeItem) {
         res.status(404);
-        res.json({ success: false, message: 'Node not found.' });
+        res.send({ success: false, message: 'Node not found.' });
       }
       // Check if authentificated user have access to this node
       // At this point, user must be auth
@@ -44,11 +33,12 @@ module.exports = function(app) {
         isNodeOwner(req.user._id, nodeItem) ||
         isNodeShared(req.user._id, nodeItem)
       ) {
+        // If success, attach node to req
         req._currentNode = nodeItem;
         next();
       } else {
         res.status(403);
-        res.json({ success: false, message: 'Not permitted for this user.' });
+        res.send({ success: false, message: 'Not permitted for this user.' });
       }
     } catch (err) {
       console.error(err);
@@ -56,12 +46,15 @@ module.exports = function(app) {
     }
   });
 
-  // app.param('nid_delete', function(req, res, next, id) {
-  //   try {
-  //     req._nodeId = id;
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  //   next();
-  // });
+  // Attach uid to req
+  app.param('uid', function(req, res, next, id) {
+    // Check if path request uid is the user auth id
+    if (!req.user || !id || req.user._id !== id) {
+      res.status(403);
+      res.send({ success: false, message: 'Not permitted for this user.' });
+    }
+    // If it is, attach uid to req
+    req._userId = id;
+    next();
+  });
 };

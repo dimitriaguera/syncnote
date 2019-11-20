@@ -16,7 +16,6 @@ module.exports = {
 };
 
 function routerGet(req, res) {
-  console.log('YOUOUOU111111111111');
   const node = req._currentNode;
   res.json({ success: true, data: node });
 }
