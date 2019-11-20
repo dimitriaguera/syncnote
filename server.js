@@ -11,6 +11,7 @@ const authModel = require('./server/auth/model');
 const nodeRoute = require('./server/node/route');
 const nodeModel = require('./server/node/model');
 const syncRoute = require('./server/sync/route');
+const shareRoute = require('./server/share/route');
 const broker = require('./server/broker/broker');
 const strategy = require('./server/auth/strategy');
 const socketConnect = require('./server/socket/connect');
@@ -52,6 +53,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
     authRoute(app);
     nodeRoute(app);
     syncRoute(app);
+    shareRoute(app);
 
     // Init Connect socket.
     const serve = socketConnect(app);

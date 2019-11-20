@@ -1,4 +1,4 @@
-import { post } from '../fetch';
+import { post, get } from '../fetch';
 
 export const loginFetch = async (username, password) => {
   try {
@@ -13,4 +13,9 @@ export const loginFetch = async (username, password) => {
   } catch (err) {
     throw err;
   }
+};
+
+export const getSharableUsers = async () => {
+  const resp = await get('/share/users');
+  return resp.data;
 };

@@ -1,4 +1,4 @@
-//const chalk = require('chalk');
+const mongodb = require('../db/mongodb');
 const { getNodeById, updateNodeById } = require('../node/controller');
 const { preparNodeToShare } = require('../node/model');
 
@@ -6,7 +6,8 @@ module.exports = {
   registerToShare: socket => {
     // Register on socket event.
     socket.on('share', shareHanlerBuilder(socket, 'share_ok', 'share_errors'));
-  }
+  },
+  getSharableUsers
 };
 
 function shareHanlerBuilder(socket, roomOk, roomError) {
@@ -54,4 +55,23 @@ function shareHanlerBuilder(socket, roomOk, roomError) {
       );
     }
   };
+}
+
+async function getSharableUsers(req, res, next) {
+  try {
+    const data = await getAllUsers();
+    res.json({ success: true, data: data });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+}
+
+async function getAllUsers() {
+  return await mongodb
+    .getDb()
+    .collection('user')
+    .find()
+    .project({ username: 1 })
+    .toArray();
 }
