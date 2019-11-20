@@ -16,10 +16,11 @@ const Share = ({ nid }) => {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log('SUBMIT: ', selected);
+    const s = Array.from(selected.keys());
+    console.log('SUBMIT: ', s);
     const _share = {
       _id: nid,
-      shared: selected
+      shared: s
     };
 
     share(_share);
