@@ -54,13 +54,25 @@ const popoverContainer = WrappedComponent => {
       // is bind in a fullscreen component
       // and we don't want to stop
       // behaviours like form submit
-      e.stopPropagation();
+      //e.stopPropagation();
       if (this.state.open) {
         this.currentKey = null;
         this.currentTarget = null;
         this.setState({ open: false });
       }
     }
+
+    // handleCloseNoStop(e) {
+    //   // no preventDefault() here because this handler
+    //   // is bind in a fullscreen component
+    //   // and we don't want to stop
+    //   // behaviours like form submit
+    //   if (this.state.open) {
+    //     this.currentKey = null;
+    //     this.currentTarget = null;
+    //     this.setState({ open: false });
+    //   }
+    // }
 
     handleScroll(e) {
       if (this.currentTarget) {
@@ -108,6 +120,7 @@ const popoverContainer = WrappedComponent => {
                 x={coords.x}
                 y={coords.y}
                 content={this.state.content}
+                close={this.handleClose}
               />
             )}
           </PopoverContext.Provider>
@@ -120,7 +133,9 @@ const popoverContainer = WrappedComponent => {
 const createPopover = Content => {
   return props => {
     const { trigger, ...rest } = props;
-    const ContentWithProps = () => <Content {...rest} />;
+    const ContentWithProps = () => (
+      <Content closeModal={this.handleClose} {...rest} />
+    );
 
     return (
       <PopoverContext.Consumer>
@@ -150,16 +165,23 @@ const PopoverActionsWrapper = React.memo(({ trigger, actions, content }) => {
   });
 });
 
-const PopoverElement = React.memo(({ content: Content, x, y }) => {
-  //console.log('RENDER POP');
+const PopoverElement = React.memo(({ close, content: Content, x, y }) => {
+  console.log('RENDER POP', close);
   const styled = { transform: `matrix(1, 0, 0, 1, ${x}, ${y})` };
   return (
     <div
       className="popover"
       style={styled}
-      onMouseDown={e => e.stopPropagation()}
+      // onMouseDown={e => {
+      //   e.stopPropagation();
+      //   //close(e);
+      // }}
     >
-      <Content />
+      <Content
+      //close={close}
+      //onClick={close}
+      //onMouseDown={e => e.stopPropagation()}
+      />
     </div>
   );
 });

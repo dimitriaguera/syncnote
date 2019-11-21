@@ -10,13 +10,19 @@ const NodeItemMenu = React.memo(
     onClickAdd,
     onClickRemove,
     onClickShare,
-    onClickShare3
+    onClickShare3,
+    closeModal
   }) => {
     return (
       <div className="node-item-menu-box">
         <ul>
           <li>
-            <button onClick={onClickEdit}>
+            <button
+              onClick={e => {
+                onClickEdit(e);
+                closeModal(e);
+              }}
+            >
               <Icon name="edit-3" />
               éditer le nom
             </button>
@@ -54,12 +60,7 @@ const NodeItemMenu = React.memo(
                 </button>
               }
             >
-              {close => (
-                <div>
-                  <button onClick={close}>Close</button>
-                  <Share nid={nid} />
-                </div>
-              )}
+              {close => <Share nid={nid} close={close} />}
             </Modal>
           </li>
         </ul>
