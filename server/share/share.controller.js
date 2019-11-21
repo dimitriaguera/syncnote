@@ -39,7 +39,7 @@ function shareHanlerBuilder(socket, roomOk, roomError) {
       const shareUpdate = preparNodeToShare(share, remoteNode);
 
       // If nothing to update, abord
-      if (!shareUpdate.shared.length) {
+      if (!shareUpdate.shared) {
         return socket.emit(roomOk, 'Share abord. Nothing to update.');
       }
 

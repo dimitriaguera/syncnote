@@ -6,21 +6,23 @@ import { getSharableUsers } from '../services/auth/auth.api';
 const Share = ({ nid }) => {
   const [node, setNode] = useState(null);
   const [users, setUsers] = useState(null);
-  const [selected, setSelected] = useState(new Map());
+  const [selected, setSelected] = useState({});
 
   function handleChange(e) {
     const id = e.target.name;
     const isChecked = e.target.checked;
-    setSelected(selected.set(id, isChecked));
+    setSelected(prevState => {
+      return { ...prevState, [id]: isChecked };
+    });
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    const s = Array.from(selected.keys());
-    console.log('SUBMIT: ', s);
+    const selection = Object.keys(selected).filter(uid => selected[uid]);
+    console.log('SUBMIT: ', selection);
     const _share = {
       _id: nid,
-      shared: s
+      shared: selection
     };
 
     share(_share);
@@ -38,28 +40,26 @@ const Share = ({ nid }) => {
   }, [nid]);
 
   useEffect(() => {
-    async function getUsers() {
+    async function getUsers(selected) {
       const res = await getSharableUsers();
-      const map = new Map();
       if (res.success) {
         setUsers(res.data);
-        node.shared.forEach(uid => map.set(uid, true));
-        setSelected(map);
+        const s = {};
+        node.shared.forEach(uid => (s[uid] = true));
+        setSelected(s);
       }
     }
     if (node) {
       getUsers();
     }
   }, [node]);
-
+  console.log('selected: ', selected);
   return (
     <div>
       <h1>{node && node.name}</h1>
       <form onSubmit={handleSubmit}>
         {users &&
           users.map(user => {
-            const checked = selected.get(user._id);
-
             if (user._id === node.owner) {
               return null;
             }
@@ -68,7 +68,7 @@ const Share = ({ nid }) => {
               <div key={user._id}>
                 <input
                   onChange={handleChange}
-                  checked={checked}
+                  checked={selected[user._id] || false}
                   type="checkbox"
                   name={user._id}
                   id={user._id}
